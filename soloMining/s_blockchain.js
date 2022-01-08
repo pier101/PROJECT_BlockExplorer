@@ -98,6 +98,7 @@ function nextBlock(bodyData){
 	let nonce = 0;
 
 	const header = findBlock(version, index, previousHash, timestamp, merkleRoot,difficulty,nonce) 
+	console.log(header)
 	const blockhash = calculateHash(version, index, previousHash, timestamp, merkleRoot,difficulty,nonce = header.nonce)
 	return new Block(blockhash, header, bodyData)
 }
@@ -191,12 +192,12 @@ function isValidTimestamp(newBlock,prevBlock){
 // 검증 함수) 신규 블록의 해시값과 difficulty값 대입 시 해시 앞자리 일치 여부 검증
 function hashMatchesDifficulty(hash,difficulty){
 	console.log("difficulty값", difficulty);
-	const hashBinary = hexToBinary(hash);
+	// const hashBinary = hexToBinary(hash);
 	const requirePrefix = '0'.repeat(difficulty);
 
 
 	//startsWith : 시작부분이 같으면 true, 다르면 false 반환하는 함수
-	return hashBinary.startsWith(requirePrefix);
+	return hash.startsWith(requirePrefix);
 }
 
 //========================================================
