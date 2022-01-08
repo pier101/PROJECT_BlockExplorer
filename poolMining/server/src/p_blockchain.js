@@ -198,7 +198,7 @@ function hashMatchesDifficulty(hash,difficulty){
 	
 // 체인 교체 함수
 const replaceChain = (newBlocks) => {
-	const p2pserver = require('./r_network')
+	const p2pserver = require('./p_network')
 	console.log(newBlocks)
 	if (isValidChain(newBlocks)){
 		if ((newBlocks.length > Blocks.length) 

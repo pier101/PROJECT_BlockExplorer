@@ -8,8 +8,8 @@ const express = require('express')
 const bodyParser =require('body-parser')
 
 const BC = require('./p_blockchain')
-const p2pserver = require('./r_network')
-const {initWallet,getPublicKeyFromWallet} = require('./r_wallet');
+const p2pserver = require('./p_network')
+const {initWallet,getPublicKeyFromWallet} = require('./p_wallet');
 
 //env 설정하기 : export HTTP_PORT=3001
 //env 설정확인 : env | grep HTTP_PORT

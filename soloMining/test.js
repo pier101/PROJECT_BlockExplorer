@@ -1,6 +1,6 @@
 Blocks=[11]
 const replaceChain = (newBlocks) => {
-	const p2pserver = require('./r_network')
+	const p2pserver = require('./s_network')
 			console.log("====원래 여기 블록=====")
 			console.log(Blocks)
 			Blocks = newBlocks;

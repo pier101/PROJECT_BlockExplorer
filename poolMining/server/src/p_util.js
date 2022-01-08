@@ -6,7 +6,7 @@ const fs = require('fs')
 
 // 호출용 함수 ) 버전 불러오기
 function getCurrentVersion(){
-    const package = fs.readFileSync("package.json");
+    const package = fs.readFileSync("../package.json");
 	//console.log(JSON.parse(package).version);
 	return JSON.parse(package).version;
 }

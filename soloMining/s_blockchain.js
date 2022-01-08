@@ -71,7 +71,6 @@ function getLastBlock(){
 
 // 해시화 함수) 인자를 블록 형태로 받아 해시화 
 function createHash(data){
-	console.log("크리에이트 해시 들어옴",data.header)
 	const {version, index, previousHash, timestamp, merkleRoot,difficulty,nonce} = data.header
 	const blockString = version + index + previousHash + timestamp + merkleRoot + difficulty + nonce
 	const hash = cryptojs.SHA256(blockString).toString()
@@ -106,7 +105,7 @@ function nextBlock(bodyData){
 // 블록 생성 함수) 생성한 블록을 체인에 연결시키는 함수
 function addBlock(newBlock){
 	console.log("duddudddud",newBlock)
-	const p2pserver = require('./r_network')
+	const p2pserver = require('./s_network')
 	if (isValidNewBlock(newBlock, getLastBlock())) {
 		Blocks.push(newBlock);
 		p2pserver.broadcastLatest()
@@ -204,7 +203,7 @@ function hashMatchesDifficulty(hash,difficulty){
 	
 // 체인 교체 함수
 const replaceChain = (newBlocks) => {
-	const p2pserver = require('./r_network')
+	const p2pserver = require('./s_network')
 	console.log(newBlocks)
 	if (isValidChain(newBlocks)){
 		if ((newBlocks.length > Blocks.length) 
