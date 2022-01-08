@@ -44,4 +44,27 @@ function getPublicKeyFromWallet(){
 
 }
 
-module.exports = {getPublicKeyFromWallet,initWallet}
+class Wallet {
+    constructor() {
+        this.balance = 0;
+        this.keyPair = ChainUtil.genKeyPair();
+        this.publicKey = this.keyPair.getPublic().encode("hex");
+    }
+
+    
+    toString() {
+        return `Wallet -
+            publicKey: ${this.publicKey.toString()}
+            balance  : ${this.balance}`
+    }
+}
+
+
+//키페어 클래스
+class ChainUtil {
+    static genKeyPair() {
+        return ec.genKeyPair();
+    }
+}
+
+module.exports = {getPublicKeyFromWallet,initWallet, Wallet}
