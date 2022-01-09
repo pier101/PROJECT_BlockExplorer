@@ -39,7 +39,7 @@ function createGenesisBlock(){  //초기 블록 생성하는 함수
 	const version = getCurrentVersion()
 	const index = 0
 	const previousHash = '0'.repeat(64) // #최초블록은 이전 해쉬 없어서 0으로 64자리 채워넣음
-	const timestamp = 1231006505
+	const timestamp = 1641747654
 	const body = ['The Times 03/Jan/2009 Chancellor on brink of second bailout for bank']
 	const tree = merkle('sha256').sync(body)
 	const merkleRoot = tree.root() || '0'.repeat(64)
@@ -98,12 +98,14 @@ function nextBlock(bodyData){
 	let nonce = 0;
 
 	const header = findBlock(version, index, previousHash, timestamp, merkleRoot,difficulty,nonce) 
+	console.log(header)
 	const blockhash = calculateHash(version, index, previousHash, timestamp, merkleRoot,difficulty,nonce = header.nonce)
 	return new Block(blockhash, header, bodyData)
 }
 
 // 블록 생성 함수) 생성한 블록을 체인에 연결시키는 함수
 function addBlock(newBlock){
+	console.log("duddudddud",newBlock)
 	const p2pserver = require('./p_network')
 	if (isValidNewBlock(newBlock, getLastBlock())) {
 		Blocks.push(newBlock);
@@ -118,6 +120,9 @@ function addBlock(newBlock){
 // 검증 함수) 신규 생성 블록 검증
 function isValidNewBlock(newBlock, previousBlock){
 
+	console.log("신규 블록 인덱스",newBlock.header.index);
+	console.log("이전 블록 인덱스",previousBlock.header.index)
+	console.log("뉴 블록 해시값 : ", newBlock);
     if (isValidBlockStructure(newBlock) == false) {
 		console.log('오류! 유효하지 않은 블록입니다.');
         return false;
@@ -162,6 +167,7 @@ function isValidBlockStructure(block){
 // 검증 함수) 다른 노드의 체인으로 교체시 체인 검증 
 function isValidChain(newBlocks) {	
 	if (JSON.stringify(newBlocks[0]) !== JSON.stringify(Blocks[0])){
+		console.log("실패")
 		return false;
 	}
 	
@@ -180,18 +186,20 @@ function isValidChain(newBlocks) {
 // 검증 함수) 블록 생성 간격 조절(해킹방지) & 블록 검증 시간 카운트다운
 // 바로바로 블록 생성 확인하려고 개발할 동안 비활성화 해 둠
 function isValidTimestamp(newBlock,prevBlock){
+	console.log("확인 ㄱㄱ")
 	return ( (newBlock.header.timestamp - prevBlock.header.timestamp) > 1 ) 
-	&& getCurrentTimestamp() - newBlock.header.timestamp  < 60
+	&& (getCurrentTimestamp()) - (newBlock.header.timestamp)  < 60
 }
 
 // 검증 함수) 신규 블록의 해시값과 difficulty값 대입 시 해시 앞자리 일치 여부 검증
 function hashMatchesDifficulty(hash,difficulty){
-	const hashBinary = hexToBinary(hash);
+	console.log("difficulty값", difficulty);
+	// const hashBinary = hexToBinary(hash);
 	const requirePrefix = '0'.repeat(difficulty);
 
 
 	//startsWith : 시작부분이 같으면 true, 다르면 false 반환하는 함수
-	return hashBinary.startsWith(requirePrefix);
+	return hash.startsWith(requirePrefix);
 }
 
 //========================================================
@@ -199,8 +207,9 @@ function hashMatchesDifficulty(hash,difficulty){
 // 체인 교체 함수
 const replaceChain = (newBlocks) => {
 	const p2pserver = require('./p_network')
-	console.log(newBlocks)
+	console.log("새 체인",newBlocks)
 	if (isValidChain(newBlocks)){
+		console.log("체인검증됨")
 		if ((newBlocks.length > Blocks.length) 
 		||(newBlocks.length === Blocks.length) && random.boolean()) {
 			Blocks = newBlocks;
@@ -218,8 +227,14 @@ function findBlock(version, index, previousHash, timestamp, merkleRoot,difficult
 	while(true){
 		var hash = calculateHash(version, index, previousHash, timestamp, merkleRoot,difficulty,nonce)
 	
+		console.log("시도하는 hash : ",hash)
 		// 정답일 경우
-		if (hashMatchesDifficulty(hash,difficulty)) {		
+		if (hashMatchesDifficulty(hash,difficulty)) {
+			console.log()
+			console.log("매칭된 hash : ",hash)
+			console.log("매칭된 nonce : ",nonce)
+			console.log()
+			
 			return new BlockHeader(version, index, previousHash, timestamp, merkleRoot,difficulty,nonce)
 		}
 		// 정답이 아닐 경우
@@ -230,6 +245,7 @@ function findBlock(version, index, previousHash, timestamp, merkleRoot,difficult
 function getDifficulty(blocks){
 	const lastBlock = blocks[blocks.length - 1];
 	if(lastBlock.header.index !== 0 && (lastBlock.header.index % DIFFICULTY_ADJUSTMENT_INTERVAL === 0)){
+		console.log("여기로 들오자")
 		return	getAdjustDifficulty(lastBlock,blocks)
 	} else{
 		return lastBlock.header.difficulty;
@@ -241,8 +257,10 @@ function getAdjustDifficulty(lastBlock,blocks){
 	const prevAdjustmentBlock = blocks[blocks.length - DIFFICULTY_ADJUSTMENT_INTERVAL];
 	//실제 걸린 시간
 	const elapsedTime = lastBlock.header.timestamp - prevAdjustmentBlock.header.timestamp
+	console.log("걸린시간 : ",elapsedTime)
 	//기대한시간
 	const expectedTime = BLOCK_GENERATION_INTERVAL	*DIFFICULTY_ADJUSTMENT_INTERVAL;
+	console.log("기대시간 : ",expectedTime)
 	if (expectedTime / 2 > elapsedTime) {	
 		console.log("난이도 upupup")
 		return prevAdjustmentBlock.header.difficulty + 1;

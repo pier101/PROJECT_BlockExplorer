@@ -1,11 +1,11 @@
 
-
 // [ HTTP server 초기화 , P2P server 초기화 , 지갑 초기화 ]
 // (사용자와 노드 간의 통신)
 // ===========================================================================
 
 const express = require('express')
 const bodyParser =require('body-parser')
+const { sequelize } = require('../models');
 
 const BC = require('./s_blockchain')
 const p2pserver = require('./s_network')
@@ -14,9 +14,16 @@ const {initWallet,getPublicKeyFromWallet} = require('./s_wallet');
 //env 설정하기 : export HTTP_PORT=3001
 //env 설정확인 : env | grep HTTP_PORT
 const http_port = process.env.HTTP_PORT || 3002;
-
 const p2p_port = process.env.P2P_PORT || 6002;
 
+
+sequelize.sync({ alter: false })
+  .then(() => {
+	  console.log('**mariadb 연결 성공**');
+  })
+  .catch((error) => {
+      console.error(error);
+})
 
 console.log("외부")
 function initHttpServer(httpport){
@@ -38,8 +45,7 @@ function initHttpServer(httpport){
         res.send()
     })
     
-    
-    
+
     app.get("/blocks",(req,res)=>{ 
         console.log("블록 확인 요청옴")
         res.send(BC.getBlocks())
@@ -87,9 +93,23 @@ function initHttpServer(httpport){
         }
     })
 
+    app.post('/createWallet',(req,res)=>{
+        /*
+            1. 공개키 있으면 이미 지갑있다고 처리
+            2. 없으면 initWallet 해서 public,address user db에 추가
+        */
+        User.findone()
+        if (condition) {
+            
+        }
+        initWallet
+
+    })
+
     app.listen(httpport,()=>{
         console.log("Listenign Http Port : " + httpport)
     })
+
 
 }
 
@@ -110,4 +130,7 @@ p2pserver.initP2PServer(p2p_port)
     curl -H "Content-type:application/json" --data "{\"data\" : 1}" http://localhost:3001/message
     등등..
     initp2pserver() 가져와서 여기서 열기
+
+    sequelize db:migrate
+    sequelize db:migrate:undo
 */

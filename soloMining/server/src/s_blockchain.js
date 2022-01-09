@@ -39,7 +39,7 @@ function createGenesisBlock(){  //초기 블록 생성하는 함수
 	const version = getCurrentVersion()
 	const index = 0
 	const previousHash = '0'.repeat(64) // #최초블록은 이전 해쉬 없어서 0으로 64자리 채워넣음
-	const timestamp = 1231006505
+	const timestamp = 1641747654
 	const body = ['The Times 03/Jan/2009 Chancellor on brink of second bailout for bank']
 	const tree = merkle('sha256').sync(body)
 	const merkleRoot = tree.root() || '0'.repeat(64)
