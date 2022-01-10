@@ -64,30 +64,32 @@ function initHttpServer(httpport){
         console.log(data)
         const block = BC.nextBlock(data)
         // console.log(block)
-        const result = BC.addBlock(block)
-        if (result){
-            console.log("블록에 저장할 데이터",block.hash)
-            console.log("블록에 저장할 데이터",block.header.version)
-            console.log("블록에 저장할 데이터",block.header.index)
-            console.log("블록에 저장할 데이터",block.body)
-            console.log("-------------------")
-        }
-        const {version, index, previousHash, timestamp, merkleRoot,difficulty,nonce} = block.header
-        Blocks.create({
-            hash: block.hash,
-            version: version,
-            index: index,
-            previousHash: previousHash,
-            timestamp: timestamp,
-            merkleRoot: merkleRoot,
-            difficulty: difficulty,
-            nonce:nonce,
-            body: block.body[0]
-        }).then(res=>{
-            console.log("블록 db 저장 성공!",res)
-        }).catch(err=>{
-            console.log("블록 db 저장 실패",err)
-        })
+        BC.addBlock(block)
+        //const result = BC.addBlock(block)
+        // 아래 db추가는 addblock에 db추가랑 중복되서 뺴도 될듯? 혹시나 두기
+        // if (result){
+        //     console.log("블록에 저장할 데이터",block.hash)
+        //     console.log("블록에 저장할 데이터",block.header.version)
+        //     console.log("블록에 저장할 데이터",block.header.index)
+        //     console.log("블록에 저장할 데이터",block.body)
+        //     console.log("-------------------")
+        //     const {version, index, previousHash, timestamp, merkleRoot,difficulty,nonce} = block.header
+        //     Blocks.create({
+        //         hash: block.hash,
+        //         version: version,
+        //         index: index,
+        //         previousHash: previousHash,
+        //         timestamp: timestamp,
+        //         merkleRoot: merkleRoot,
+        //         difficulty: difficulty,
+        //         nonce:nonce,
+        //         body: block.body[0]
+        //     }).then(()=>{
+        //         console.log("블록 db 저장 성공!")
+        //     }).catch(err=>{
+        //         console.log("블록 db 저장 실패",err)
+        //     })
+        // }
 
 
         res.send(BC.getBlocks())
