@@ -125,8 +125,8 @@ function addBlock(newBlock){
             difficulty: difficulty,
             nonce:nonce,
             body: newBlock.body[0]
-        }).then(res=>{
-            console.log("블록 db 저장 성공!",res)
+        }).then(()=>{
+            console.log("블록 db 저장 성공!")
         }).catch(err=>{
             console.log("블록 db 저장 실패",err)
         })
