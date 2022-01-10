@@ -49,12 +49,14 @@ function initHttpServer(httpport){
     app.get("/blocks",(req,res)=>{ 
         console.log("블록 확인 요청옴")
         res.send(BC.getBlocks())
+        
     })
     
     // block 채굴(생성)
     app.post('/mineBlock',(req,res)=>{
         console.log("채굴 요청옴")
         const data = [req.body.data] || []
+        Block.create
         console.log(data)
         const block = BC.nextBlock(data)
         // console.log(block)

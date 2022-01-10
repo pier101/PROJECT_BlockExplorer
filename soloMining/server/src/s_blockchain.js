@@ -141,10 +141,10 @@ function isValidNewBlock(newBlock, previousBlock){
 		console.log('오류! 머클루트 값이 유효하지 않습니다.');
         return false;
     }
-    else if (!isValidTimestamp(newBlock, previousBlock)) {
-		    console.log("오류! 타임스탬프")
-		    return false;
-	}
+    // else if (!isValidTimestamp(newBlock, previousBlock)) {
+	// 	    console.log("오류! 타임스탬프")
+	// 	    return false;
+	// }
 	else if (!hashMatchesDifficulty(createHash(newBlock), newBlock.header.difficulty)){
 		console.log("오류! 신규 블럭의 해시 앞자리와 difficulty 자릿수가 일치하지 않음");
 		return false;
