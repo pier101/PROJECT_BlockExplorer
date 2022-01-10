@@ -6,6 +6,8 @@ const cryptojs = require('crypto-js')
 const merkle = require('merkle')
 const random = require('random');
 const {getCurrentVersion, getCurrentTimestamp, hexToBinary} = require("./s_util")
+const BlocksDB = require('../models/blocks');
+
 
 // 현재 개발 편의상 임의값으로 설정해둔 상태
 const BLOCK_GENERATION_INTERVAL = 200 //블록이 생성되는 간격  
@@ -110,6 +112,24 @@ function addBlock(newBlock){
 	if (isValidNewBlock(newBlock, getLastBlock())) {
 		Blocks.push(newBlock);
 		p2pserver.broadcastLatest()
+		console.log('블록 추가 ',newBlock)
+		//db 추가
+		const {version, index, previousHash, timestamp, merkleRoot,difficulty,nonce} = newBlock.header
+		BlocksDB.create({
+            hash: newBlock.hash,
+            version: version,
+            index: index,
+            previousHash: previousHash,
+            timestamp: timestamp,
+            merkleRoot: merkleRoot,
+            difficulty: difficulty,
+            nonce:nonce,
+            body: newBlock.body[0]
+        }).then(res=>{
+            console.log("블록 db 저장 성공!",res)
+        }).catch(err=>{
+            console.log("블록 db 저장 실패",err)
+        })
 		return true;
 	}
 	return false;
@@ -212,6 +232,27 @@ const replaceChain = (newBlocks) => {
 			Blocks = newBlocks;
 			console.log("교체 완료!")
 			p2pserver.broadcast(p2pserver.responseLatestMsg())
+			
+			BlocksDB.destroy({
+				where: {},
+				truncate: true
+			  })
+			  console.log("삭제")
+			newBlocks.map(block=>{
+				let {version, index, previousHash, timestamp, merkleRoot,difficulty,nonce} = block.header
+				BlocksDB.create({
+					hash: block.hash,
+					version: version,
+					index: index,
+					previousHash: previousHash,
+					timestamp: timestamp,
+					merkleRoot: merkleRoot,
+					difficulty: difficulty,
+					nonce:nonce,
+					body: block.body[0]
+				})
+				
+			})
 		}
 	} 
 	else {

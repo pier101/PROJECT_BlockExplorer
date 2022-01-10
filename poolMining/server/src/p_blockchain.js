@@ -6,6 +6,8 @@ const cryptojs = require('crypto-js')
 const merkle = require('merkle')
 const random = require('random');
 const {getCurrentVersion, getCurrentTimestamp, hexToBinary} = require("./p_util")
+const BlocksDB = require('../models/blocks');
+
 
 // 현재 개발 편의상 임의값으로 설정해둔 상태
 const BLOCK_GENERATION_INTERVAL = 200 //블록이 생성되는 간격  
@@ -110,6 +112,24 @@ function addBlock(newBlock){
 	if (isValidNewBlock(newBlock, getLastBlock())) {
 		Blocks.push(newBlock);
 		p2pserver.broadcastLatest()
+		console.log('블록 추가 ',newBlock)
+		//db 추가
+		const {version, index, previousHash, timestamp, merkleRoot,difficulty,nonce} = newBlock.header
+		BlocksDB.create({
+            hash: newBlock.hash,
+            version: version,
+            index: index,
+            previousHash: previousHash,
+            timestamp: timestamp,
+            merkleRoot: merkleRoot,
+            difficulty: difficulty,
+            nonce:nonce,
+            body: newBlock.body[0]
+        }).then(res=>{
+            console.log("블록 db 저장 성공!",res)
+        }).catch(err=>{
+            console.log("블록 db 저장 실패",err)
+        })
 		return true;
 	}
 	return false;
@@ -167,7 +187,6 @@ function isValidBlockStructure(block){
 // 검증 함수) 다른 노드의 체인으로 교체시 체인 검증 
 function isValidChain(newBlocks) {	
 	if (JSON.stringify(newBlocks[0]) !== JSON.stringify(Blocks[0])){
-		console.log("실패")
 		return false;
 	}
 	
@@ -186,9 +205,8 @@ function isValidChain(newBlocks) {
 // 검증 함수) 블록 생성 간격 조절(해킹방지) & 블록 검증 시간 카운트다운
 // 바로바로 블록 생성 확인하려고 개발할 동안 비활성화 해 둠
 function isValidTimestamp(newBlock,prevBlock){
-	console.log("확인 ㄱㄱ")
 	return ( (newBlock.header.timestamp - prevBlock.header.timestamp) > 1 ) 
-	&& (getCurrentTimestamp()) - (newBlock.header.timestamp)  < 60
+	&& getCurrentTimestamp() - newBlock.header.timestamp  < 60
 }
 
 // 검증 함수) 신규 블록의 해시값과 difficulty값 대입 시 해시 앞자리 일치 여부 검증
@@ -207,14 +225,34 @@ function hashMatchesDifficulty(hash,difficulty){
 // 체인 교체 함수
 const replaceChain = (newBlocks) => {
 	const p2pserver = require('./p_network')
-	console.log("새 체인",newBlocks)
+	console.log(newBlocks)
 	if (isValidChain(newBlocks)){
-		console.log("체인검증됨")
 		if ((newBlocks.length > Blocks.length) 
 		||(newBlocks.length === Blocks.length) && random.boolean()) {
 			Blocks = newBlocks;
 			console.log("교체 완료!")
 			p2pserver.broadcast(p2pserver.responseLatestMsg())
+			
+			BlocksDB.destroy({
+				where: {},
+				truncate: true
+			  })
+			  console.log("삭제")
+			newBlocks.map(block=>{
+				let {version, index, previousHash, timestamp, merkleRoot,difficulty,nonce} = block.header
+				BlocksDB.create({
+					hash: block.hash,
+					version: version,
+					index: index,
+					previousHash: previousHash,
+					timestamp: timestamp,
+					merkleRoot: merkleRoot,
+					difficulty: difficulty,
+					nonce:nonce,
+					body: block.body[0]
+				})
+				
+			})
 		}
 	} 
 	else {

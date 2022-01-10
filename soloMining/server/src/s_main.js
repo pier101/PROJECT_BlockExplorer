@@ -11,6 +11,10 @@ const BC = require('./s_blockchain')
 const p2pserver = require('./s_network')
 const {initWallet,getPublicKeyFromWallet} = require('./s_wallet');
 
+const Blocks = require('../models/blocks');
+const Miner = require('../models/miner'); 
+const { version } = require('elliptic');
+
 //env 설정하기 : export HTTP_PORT=3001
 //env 설정확인 : env | grep HTTP_PORT
 const http_port = process.env.HTTP_PORT || 3002;
@@ -37,10 +41,11 @@ function initHttpServer(httpport){
         console.log("피어확인 요청")
         res.send(p2pserver.getSockets().map(s=> s._socket.remoteAddress + ':' + s._socket.remotePort));
     })
+
     app.post("/addPeers",(req,res)=>{
         console.log("피어추가")
         const data = req.body.data
-        console.log("데이터",data)
+        console.log("데이터터터", data)
         p2pserver.connectToPeers(data);
         res.send()
     })
@@ -56,11 +61,35 @@ function initHttpServer(httpport){
     app.post('/mineBlock',(req,res)=>{
         console.log("채굴 요청옴")
         const data = [req.body.data] || []
-        Block.create
         console.log(data)
         const block = BC.nextBlock(data)
         // console.log(block)
-        BC.addBlock(block)
+        const result = BC.addBlock(block)
+        if (result){
+            console.log("블록에 저장할 데이터",block.hash)
+            console.log("블록에 저장할 데이터",block.header.version)
+            console.log("블록에 저장할 데이터",block.header.index)
+            console.log("블록에 저장할 데이터",block.body)
+            console.log("-------------------")
+        }
+        const {version, index, previousHash, timestamp, merkleRoot,difficulty,nonce} = block.header
+        Blocks.create({
+            hash: block.hash,
+            version: version,
+            index: index,
+            previousHash: previousHash,
+            timestamp: timestamp,
+            merkleRoot: merkleRoot,
+            difficulty: difficulty,
+            nonce:nonce,
+            body: block.body[0]
+        }).then(res=>{
+            console.log("블록 db 저장 성공!",res)
+        }).catch(err=>{
+            console.log("블록 db 저장 실패",err)
+        })
+
+
         res.send(BC.getBlocks())
         /*
             채굴시 브로드캐스트 날려야할지..

@@ -1,6 +1,5 @@
 'use strict';
-// const Sequelize = require('sequelize')
-// const {Model}  = DataTypes
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('Miner', {

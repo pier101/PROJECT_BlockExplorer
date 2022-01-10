@@ -23,8 +23,11 @@ module.exports =  class Miner extends Sequelize.Model {
       },
       {
         sequelize,
-        modelName: 'Miner',
         timestamps: false,
+        underscored: false,
+        modelName: "Miner",
+        tableName: "Miner",
+        paranoid: false,
         charset: "utf8mb4",
         collate: "utf8mb4_general_ci",
       },  
