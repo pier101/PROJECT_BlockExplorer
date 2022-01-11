@@ -24,12 +24,9 @@ function sendBlock(block){
 // 연결시 초기 상태 설정
 function initConnection(ws) {
     sockets.push(ws);
-    console.log("확인용1")
     initMessageHandler(ws)
     initErrorHandler(ws)
-    console.log("확인용2")
     write(ws, queryLatestMsg());
-    console.log("확인용3")
 }
 
 function  getSockets(){ 
@@ -46,11 +43,8 @@ const broadcastLatest = () => {
 
 // 통신이 되어있는 노드 모두에게 메세지 전달
 function broadcast(message) {
-    console.log("broadcast1")
     sockets.forEach( socket =>{
-        console.log("broadcast2")
-        console.log(message)
-        
+        console.log("message==",message)
         write(socket,message)
     })
 }
@@ -82,7 +76,7 @@ function initMessageHandler(ws){
             console.log('메세지가 없거나 제대로 파싱되지 않았습니다. \n data :' + data);
             return
         }
-        // console.log('받은 메세지 3001 : ' + JSON.stringify(message));
+        // console.log('받은 메세지 3002 : ' + JSON.stringify(message));
         switch (message.type) {
             case MessageType.QUERY_LATEST:
                 console.log("메세지 0  3002")
@@ -109,7 +103,6 @@ function initMessageHandler(ws){
 }
 
 function responseLatestMsg(){
-    console.log("responseLatestMsg로 옴");
     return ({
         "type": MessageType.RESPONSE_BLOCKCHAIN,
         "data": JSON.stringify([BC.getLastBlock()]) 
@@ -163,7 +156,6 @@ function handleBlockChainResponse(receivedBlocks){
             console.log('블록 다시 요청 함');
             broadcast(queryAllMsg());
         }
-
         // 받은 블록의 길이가 더 길때
         else {
             console.log('** (업데이트) 받은 블록체인으로 교체 **');

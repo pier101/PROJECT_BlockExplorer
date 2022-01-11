@@ -7,17 +7,18 @@ const express = require('express')
 const bodyParser =require('body-parser')
 const { sequelize } = require('../models');
 
-const BC = require('./p_blockchain')
-const p2pserver = require('./p_network')
-const {initWallet,getPublicKeyFromWallet} = require('./p_wallet');
-const {importBlockDB} = require('./p_util')
+const BC = require('./s_blockchain')
+const p2pserver = require('./s_network')
+const {initWallet,getPublicKeyFromWallet} = require('./s_wallet');
 
+const BlocksDB = require('../models/blocks');
+const Miner = require('../models/miner'); 
 const { version } = require('elliptic');
 
 //env 설정하기 : export HTTP_PORT=3001
 //env 설정확인 : env | grep HTTP_PORT
-const http_port = process.env.HTTP_PORT || 3001;
-const p2p_port = process.env.P2P_PORT || 6001;
+const http_port = process.env.HTTP_PORT || 3002;
+const p2p_port = process.env.P2P_PORT || 6002;
 
 
 sequelize.sync({ alter: false })
@@ -116,11 +117,11 @@ function initHttpServer(httpport){
 }
 
 initWallet();
-importBlockDB()
+BC.importBlockDB()
 
 initHttpServer(http_port)
+// p2pserver.connectToPeers(["ws://localhost:6002"]);
 p2pserver.initP2PServer(p2p_port)
-p2pserver.connectToPeers(["ws://localhost:6002"]);
 
 
 /*

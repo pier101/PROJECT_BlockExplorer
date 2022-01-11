@@ -10,9 +10,8 @@ const { sequelize } = require('../models');
 const BC = require('./s_blockchain')
 const p2pserver = require('./s_network')
 const {initWallet,getPublicKeyFromWallet} = require('./s_wallet');
+const {importBlockDB} = require('./s_util')
 
-const Blocks = require('../models/blocks');
-const Miner = require('../models/miner'); 
 const { version } = require('elliptic');
 
 //env 설정하기 : export HTTP_PORT=3001
@@ -35,8 +34,7 @@ function initHttpServer(httpport){
     console.log("내부")
     const app = express()
     app.use(bodyParser.json())
-    
-    
+        
     app.get("/peers",(req,res)=>{
         console.log("피어확인 요청")
         res.send(p2pserver.getSockets().map(s=> s._socket.remoteAddress + ':' + s._socket.remotePort));
@@ -66,36 +64,7 @@ function initHttpServer(httpport){
         // console.log(block)
         BC.addBlock(block)
         //const result = BC.addBlock(block)
-        // 아래 db추가는 addblock에 db추가랑 중복되서 뺴도 될듯? 혹시나 두기
-        // if (result){
-        //     console.log("블록에 저장할 데이터",block.hash)
-        //     console.log("블록에 저장할 데이터",block.header.version)
-        //     console.log("블록에 저장할 데이터",block.header.index)
-        //     console.log("블록에 저장할 데이터",block.body)
-        //     console.log("-------------------")
-        //     const {version, index, previousHash, timestamp, merkleRoot,difficulty,nonce} = block.header
-        //     Blocks.create({
-        //         hash: block.hash,
-        //         version: version,
-        //         index: index,
-        //         previousHash: previousHash,
-        //         timestamp: timestamp,
-        //         merkleRoot: merkleRoot,
-        //         difficulty: difficulty,
-        //         nonce:nonce,
-        //         body: block.body[0]
-        //     }).then(()=>{
-        //         console.log("블록 db 저장 성공!")
-        //     }).catch(err=>{
-        //         console.log("블록 db 저장 실패",err)
-        //     })
-        // }
-
-
         res.send(BC.getBlocks())
-        /*
-            채굴시 브로드캐스트 날려야할지..
-        */
     })
     
     // 버전 확인
@@ -147,9 +116,11 @@ function initHttpServer(httpport){
 }
 
 initWallet();
-p2pserver.connectToPeers(["ws://localhost:6001"]);
+importBlockDB()
+
 initHttpServer(http_port)
 p2pserver.initP2PServer(p2p_port)
+p2pserver.connectToPeers(["ws://localhost:6002"]);
 
 
 /*

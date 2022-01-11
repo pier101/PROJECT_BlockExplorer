@@ -5,14 +5,7 @@
 const cryptojs = require('crypto-js')
 const merkle = require('merkle')
 const random = require('random');
-const {
-	getCurrentVersion,
-    getCurrentTimestamp,
-    // hexToBinary,
-	replaceBlockDB,
-	addBlockDB,
-	addGenesisDB,
-} = require("./s_util")
+const {getCurrentVersion, getCurrentTimestamp, hexToBinary} = require("./s_util")
 const BlocksDB = require('../models/blocks');
 
 
@@ -23,7 +16,7 @@ const DIFFICULTY_ADJUSTMENT_INTERVAL = 2 //  난이도가 조정되는 간격
 // 블록 구조 설정
 class Block{
 	constructor(hash, header, body){
-		this.hash = hash //직관적으로 보려고 블록해시값도 추가함
+		this.hash = hash 
 		this.header = header
 		this.body = body
 	}
@@ -55,12 +48,30 @@ function createGenesisBlock(){  //초기 블록 생성하는 함수
 	const difficulty = 1;
 	const nonce = 0
 	
-	const rebody = body[0]
+	
 	const header = new BlockHeader(version,index, previousHash, timestamp, merkleRoot,difficulty,nonce)
+	
 	const blockhash = calculateHash(version, previousHash,index, timestamp, merkleRoot,difficulty,nonce) 
 	
-	addGenesisDB(blockhash,version, previousHash,index, timestamp, merkleRoot,difficulty,nonce,rebody)
-
+	const isGenesisDB = BlocksDB.findOne({where:{index : 0}})
+	if (!isGenesisDB) {
+		BlocksDB.create({
+			hash: '0'.repeat(64),
+			version: version,
+			index: index,
+			previousHash: previousHash,
+			timestamp: timestamp,
+			merkleRoot: merkleRoot,
+			difficulty: difficulty,
+			nonce:nonce,
+			body: body[0]
+		}).then(()=>{
+			console.log("블록 db 저장 성공!")
+		}).catch(err=>{
+			console.log("블록 db 저장 실패",err)
+		})
+		
+	}
 	return new Block(blockhash,header, body)
 }
 
@@ -116,14 +127,29 @@ function nextBlock(bodyData){
 
 // 블록 생성 함수) 생성한 블록을 체인에 연결시키는 함수
 function addBlock(newBlock){
+	console.log("duddudddud",newBlock)
 	const p2pserver = require('./s_network')
 	if (isValidNewBlock(newBlock, getLastBlock())) {
 		Blocks.push(newBlock);
 		p2pserver.broadcastLatest()
-		console.log('블록 추가')
-		
-		addBlockDB(newBlock)
-
+		console.log('블록 추가 ',newBlock)
+		//db 추가
+		const {version, index, previousHash, timestamp, merkleRoot,difficulty,nonce} = newBlock.header
+		BlocksDB.create({
+			hash: newBlock.hash,
+            version: version,
+            index: index,
+            previousHash: previousHash,
+            timestamp: timestamp,
+            merkleRoot: merkleRoot,
+            difficulty: difficulty,
+            nonce:nonce,
+            body: newBlock.body[0]
+        }).then(()=>{
+			console.log("블록 db 저장 성공!")
+        }).catch(err=>{
+			console.log("블록 db 저장 실패",err)
+        })
 		return true;
 	}
 	return false;
@@ -167,7 +193,16 @@ function isValidNewBlock(newBlock, previousBlock){
 	
 	// 검증 함수) 블록 구조 검증
 	function isValidBlockStructure(block){
-
+		console.log( '여기여기'
+			// `${typeof(block.header.version)} \n
+			// ${typeof(block.header.index)} \n
+			// ${typeof(block.header.previousHash)} \n
+			// ${typeof(block.header.timestamp)} \n
+			// ${typeof(block.header.merkleRoot)} \n
+			// ${typeof(block.header.difficulty)} \n
+			// ${typeof(block.header.nonce)} \n
+			// ${typeof(block.body)}	`
+		)
 		return typeof(block.header.version) === 'string'
 		&& typeof(block.header.index) === 'number'
 		&& typeof(block.header.previousHash) === 'string'
@@ -181,7 +216,6 @@ function isValidNewBlock(newBlock, previousBlock){
 	// 검증 함수) 다른 노드의 체인으로 교체시 체인 검증 
 	function isValidChain(newBlocks) {	
 		if (JSON.stringify(newBlocks[0]) !== JSON.stringify(Blocks[0])){
-			console.log('dddd')
 			return false;
 		}
 		
@@ -230,7 +264,27 @@ function isValidNewBlock(newBlock, previousBlock){
 				Blocks = newBlocks;
 				console.log("교체 완료!")
 				p2pserver.broadcast(p2pserver.responseLatestMsg())
-				replaceBlockDB(newBlocks)
+				
+				BlocksDB.destroy({
+					where: {},
+					truncate: true
+				})
+				console.log("삭제")
+				newBlocks.map(block=>{
+					let {version, index, previousHash, timestamp, merkleRoot,difficulty,nonce} = block.header
+					BlocksDB.create({
+						hash: block.hash,
+						version: version,
+						index: index,
+						previousHash: previousHash,
+						timestamp: timestamp,
+						merkleRoot: merkleRoot,
+						difficulty: difficulty,
+						nonce:nonce,
+						body: block.body[0]
+					})
+					
+				})
 			}
 		} 
 		else {
@@ -290,20 +344,35 @@ function isValidNewBlock(newBlock, previousBlock){
 		}
 	}
 	
+	function importBlockDB() {
+		BlocksDB.findAll({where:{}})
+		.then(res=>{
+			console.log('저장된 db 불러오기');
+			res.map(blocks=>{
+				if (blocks.dataValues.index === 0) {
+					return true
+				} else{
+					const {hash,version,index, previousHash, timestamp, merkleRoot,difficulty,nonce,body} = blocks.dataValues;
+					const header =  new BlockHeader(version,index, previousHash, timestamp, merkleRoot,difficulty,nonce)
+					console.log([body])
+					const createdBlock = new Block(hash,header,[body])
+					Blocks.push(createdBlock)
+				}
+			})
+		})
+	}
+	
 	
 	module.exports ={
-		getBlocks,
-		getLastBlock,
 		createHash,
 		getLastBlock,
 		nextBlock,
+		getBlocks,
 		addBlock,
 		replaceChain,
 		hashMatchesDifficulty,
 		isValidBlockStructure,
-		Block,
-		BlockHeader,
-		Blocks
+		importBlockDB
 	}
 	
 	//코드정리후

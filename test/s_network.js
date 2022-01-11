@@ -4,7 +4,7 @@
 // ===========================================================================
 
 const WebSocket = require('ws')
-const BC = require('./p_blockchain')
+const BC = require('./s_blockchain')
 let sockets = []
 
 function initP2PServer(p2p_port){
@@ -24,10 +24,12 @@ function sendBlock(block){
 // 연결시 초기 상태 설정
 function initConnection(ws) {
     sockets.push(ws);
-
+    console.log("확인용1")
     initMessageHandler(ws)
     initErrorHandler(ws)
+    console.log("확인용2")
     write(ws, queryLatestMsg());
+    console.log("확인용3")
 }
 
 function  getSockets(){ 
@@ -44,9 +46,11 @@ const broadcastLatest = () => {
 
 // 통신이 되어있는 노드 모두에게 메세지 전달
 function broadcast(message) {
-    
+    console.log("broadcast1")
     sockets.forEach( socket =>{
+        console.log("broadcast2")
         console.log(message)
+        
         write(socket,message)
     })
 }
@@ -124,7 +128,7 @@ function handleBlockChainResponse(receivedBlocks){
     
     // 받은 블럭 데이터 값이 없을 떄
     if (receivedBlocks.length === 0) {
-        console.log('받은 블록이 비어있음');
+        console.log('received block chain size of 0');
         return;
     }
 
@@ -134,7 +138,7 @@ function handleBlockChainResponse(receivedBlocks){
     const latestBlockHeld = BC.getLastBlock();
     
     if (!BC.isValidBlockStructure(latestBlockReceived)) {
-        console.log('잘못된 구성된 블록 받음');
+        console.log('block structuture not valid');
         return;
     }
     // const preprepre = receivedBlocks[receivedBlocks.length - 2];
