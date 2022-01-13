@@ -6,8 +6,8 @@ module.exports = {
   development: {
     username: "root",
     password: "1234",
-    database: "6002_node",
-    port : 3307,
+    database: "blockchain",
+    port : "3307",
     host: "localhost",
     dialect: 'mysql',
   },

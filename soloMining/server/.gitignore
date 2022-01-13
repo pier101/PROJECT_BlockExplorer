@@ -1,3 +1,5 @@
 node_modules
-src/wallet
+node_1/wallet
+node_2/wallet
+node_3/wallet
 .env

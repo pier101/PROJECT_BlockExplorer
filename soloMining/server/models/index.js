@@ -1,8 +1,11 @@
 require("dotenv").config();
 
 const Sequelize = require("sequelize");
-const Miner = require("./miner");
+
 const Blocks = require('./blocks');
+const Node1 = require('./node1');
+const Node2 = require('./node2');
+const Node3 = require('./node3');
 
 const env = process.env.NODE_ENV || "development";
 const db = {};
@@ -21,12 +24,19 @@ const sequelize = new Sequelize(
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-db.Miner = Miner;
 db.Blocks = Blocks;
+db.Node1 = Node1;
+db.Node2 = Node2;
+db.Node3 = Node3;
 
-Miner.init(sequelize);
 Blocks.init(sequelize);
+Node1.init(sequelize);
+Node2.init(sequelize);
+Node3.init(sequelize);
 
-Miner.associate(db);
 Blocks.associate(db);
+Node1.associate(db);
+Node2.associate(db);
+Node3.associate(db);
+
 module.exports = db;
