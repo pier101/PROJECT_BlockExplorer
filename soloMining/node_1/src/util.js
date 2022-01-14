@@ -57,7 +57,7 @@ function importBlockDB() {
 	})
 }
 					
-function addGenesisDB(blockhash,version, previousHash,index, timestamp, merkleRoot,difficulty,nonce,rebody) {
+function addGenesisDB(blockhash,version, previousHash,index, timestamp, merkleRoot,difficulty,nonce,rebody,miner) {
 	
 	BlockDB.findOne({where:{index:0}}).then(isGenesisDB =>{
 		if (isGenesisDB) {
@@ -73,7 +73,8 @@ function addGenesisDB(blockhash,version, previousHash,index, timestamp, merkleRo
 				merkleRoot: merkleRoot,
 				difficulty: difficulty,
 				nonce:nonce,
-				body: rebody
+				body: rebody,
+				miner: miner
 			}).then(()=>{
 				console.log("블록 db 저장 성공!")
 			}).catch(err=>{
@@ -95,7 +96,8 @@ function addBlockDB(newBlock) {
 		merkleRoot: merkleRoot,
 		difficulty: difficulty,
 		nonce:nonce,
-		body: newBlock.body[0]
+		body: newBlock.body[0],
+		miner: newBlock.miner
 	}).then(()=>{
 		console.log("블록 db 저장 성공!")
 	}).catch(err=>{
@@ -120,7 +122,8 @@ function replaceBlockDB(newBlocks) {
 			merkleRoot: merkleRoot,
 			difficulty: difficulty,
 			nonce:nonce,
-			body: block.body[0]
+			body: block.body[0],
+			miner: block.miner
 		})
 		
 	})

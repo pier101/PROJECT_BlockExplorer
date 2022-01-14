@@ -43,6 +43,10 @@ module.exports = class Blocks extends Sequelize.Model {
                     allowNull: false,
                     defaultValue : "TX-1"
                 },
+                miner: {
+                    type: Sequelize.STRING(130),
+                    allowNull:true
+                }
             },
             {
                 sequelize,

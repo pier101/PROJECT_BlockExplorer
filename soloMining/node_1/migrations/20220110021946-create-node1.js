@@ -39,6 +39,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull : false,
       },
+      miner: {
+        type: Sequelize.STRING(130),
+        allowNull:true
+    }
     });
   },
   down: async (queryInterface, Sequelize) => {

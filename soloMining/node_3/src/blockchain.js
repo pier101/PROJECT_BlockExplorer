@@ -13,6 +13,7 @@ const {
 	addBlockDB,
 	addGenesisDB,
 } = require("./util")
+const { getPublicKeyFromWallet } = require('./wallet')
 
 
 
@@ -22,10 +23,11 @@ const DIFFICULTY_ADJUSTMENT_INTERVAL = 2 //  난이도가 조정되는 간격
 
 // 블록 구조 설정
 class Block{
-	constructor(hash, header, body){
+	constructor(hash, header, body,miner){
 		this.hash = hash //직관적으로 보려고 블록해시값도 추가함
 		this.header = header
 		this.body = body
+		this.miner = miner
 	}
 }
 
@@ -54,14 +56,15 @@ function createGenesisBlock(){  //초기 블록 생성하는 함수
 	const merkleRoot = tree.root() || '0'.repeat(64)
 	const difficulty = 1;
 	const nonce = 0
+	const miner = "04771c607e00d4a4107fad6612f366fe42b7330b2962134ca6b8794520d3af1178c1c855049fc256f1e578dde271057a21b48382dc149e226290bd0db8f5f89290"
 	
 	const rebody = body[0]
 	const header = new BlockHeader(version,index, previousHash, timestamp, merkleRoot,difficulty,nonce)
 	const blockhash = calculateHash(version, previousHash,index, timestamp, merkleRoot,difficulty,nonce) 
 	
-	addGenesisDB(blockhash,version, previousHash,index, timestamp, merkleRoot,difficulty,nonce,rebody)
+	addGenesisDB(blockhash,version, previousHash,index, timestamp, merkleRoot,difficulty,nonce,rebody,miner)
 
-	return new Block(blockhash,header, body)
+	return new Block(blockhash,header, body,miner)
 }
 
 
@@ -107,11 +110,12 @@ function nextBlock(bodyData){
 	const merkleRoot = tree.root() || '0'.repeat(64);
 	const difficulty = getDifficulty(getBlocks());
 	let nonce = 0;
+	const miner = getPublicKeyFromWallet()
 	
 	const header = findBlock(version, index, previousHash, timestamp, merkleRoot,difficulty,nonce) 
 	console.log(header)
 	const blockhash = calculateHash(version, index, previousHash, timestamp, merkleRoot,difficulty,nonce = header.nonce)
-	return new Block(blockhash, header, bodyData)
+	return new Block(blockhash, header, bodyData, miner)
 }
 
 // 블록 생성 함수) 생성한 블록을 체인에 연결시키는 함수

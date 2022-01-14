@@ -116,10 +116,11 @@ function initHttpServer(httpport){
 }
 
 initWallet();
+
 importBlockDB()
 
 initHttpServer(http_port)
-p2pserver.connectToPeers(["ws://localhost:6003"]);
+p2pserver.connectToPeers(["ws://localhost:6001"]);
 p2pserver.initP2PServer(p2p_port)
 
 

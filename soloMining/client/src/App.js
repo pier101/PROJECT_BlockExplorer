@@ -3,6 +3,7 @@ import {Route, Switch} from 'react-router-dom';
 import NavBar from './components/NavBar/NavBar'
 
 function App() {
+  
   return (
     <Suspense fallback={(<div>Loading...</div>)}>
       <NavBar>
