@@ -9,38 +9,18 @@ import { TotalProfit } from '../components/dashboard/total-profit';
 import { TrafficByDevice } from '../components/dashboard/traffic-by-device';
 import { DashboardLayout } from '../components/dashboard-layout';
 import {useState} from 'react'
-import {DashboardCore } from './index2';
-const Dashboard = () => {
-  
-  
-  const [blockLength,setBlockLength] = useState(0)
-  const [block,setBlock] = useState()
-  const [miningResult,setMiningResult] = useState([])
-  
-  const handleBlockLength = (data)=>{
-    setBlockLength(data[0].length)
-    setBlock(data[0])
-    const result = [];
-    console.log("000000000",...miningResult)
-    setMiningResult([data[1],...miningResult])
-  }
-  
-  
-  return (
+const DashboardCore = () => {
+    
+    const [blockLength,setBlockLength] = useState(0)
+    const [block,setBlock] = useState()
+    
+    const handleBlockLength = (data)=>{
+      setBlockLength(data.length)
+      setBlock(data)
+    }
+    
+    return (
 
-     <DashboardLayout>
-    <Head>
-      <title>
-        Dashboard | Material Kit
-      </title>
-    </Head>
-    <Box
-      component="main"
-      sx={{
-        flexGrow: 1,
-        py: 8
-      }}
-      >
       <Container maxWidth={false}>
         <Grid
           container
@@ -91,7 +71,7 @@ const Dashboard = () => {
             xl={9}
             xs={12}
             >
-            <Sales resultMsg={miningResult}/>
+            <Sales />
           </Grid>
           <Grid
             item
@@ -114,15 +94,7 @@ const Dashboard = () => {
           </Grid>
         </Grid>
       </Container>
-    </Box>
 
-    </DashboardLayout>
 );}
-// Dashboard.getLayout = (page) => (
-//   <DashboardLayout>
-//     {page}
-//   </DashboardLayout>
-// );
 
-
-export default Dashboard;
+export default DashboardCore;

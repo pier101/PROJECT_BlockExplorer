@@ -6,7 +6,8 @@
 const express = require('express')
 const bodyParser =require('body-parser')
 const { sequelize } = require('../models');
-
+const cors = require('cors')
+const BlockDB = require('../models/blocks')
 const BC = require('./blockchain')
 const p2pserver = require('./network')
 const {initWallet,getPublicKeyFromWallet} = require('./wallet');
@@ -33,6 +34,7 @@ function initHttpServer(httpport){
     
     console.log("내부")
     const app = express()
+    app.use(cors())
     app.use(bodyParser.json())
         
     app.get("/peers",(req,res)=>{
@@ -51,7 +53,9 @@ function initHttpServer(httpport){
 
     app.get("/blocks",(req,res)=>{ 
         console.log("블록 확인 요청옴")
-        res.send(BC.getBlocks())
+        BlockDB.findAll({where:{},order: [["index", "DESC"]]}).then(data=>{
+            res.send(data)
+        })
         
     })
     
@@ -73,9 +77,15 @@ function initHttpServer(httpport){
         res.send(BC.getVersion())
     })
     app.get("/last",(req,res)=>{
-
         res.send(BC.getLastBlock())
     })
+    app.get("/miner",(req,res)=>{
+        res.send(getPublicKeyFromWallet().toString())
+    })
+    app.get("/chenkOn",(req,res)=>{
+            res.send(true)
+    })
+    
     
     // 작업 종료
     app.post("/stop",(req,res)=>{
@@ -120,7 +130,7 @@ initWallet();
 importBlockDB()
 
 initHttpServer(http_port)
-p2pserver.connectToPeers(["ws://localhost:6001"]);
+// p2pserver.connectToPeers(["ws://localhost:6001"]);
 p2pserver.initP2PServer(p2p_port)
 
 
