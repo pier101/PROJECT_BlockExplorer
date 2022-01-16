@@ -14,6 +14,7 @@ const {
 	addGenesisDB,
 } = require("./util")
 const {getPublicKeyFromWallet} = require('./wallet')
+const {resultMsg} = require('./messege')
 
 
 
@@ -54,13 +55,13 @@ function createGenesisBlock(){  //초기 블록 생성하는 함수
 	const body = ['genesis_TX-0']
 	const tree = merkle('sha256').sync(body)
 	const merkleRoot = tree.root() || '0'.repeat(64)
-	const difficulty = 1;
+	const difficulty = 0;
 	const nonce = 0
 	
 	const rebody = body[0]
 	const header = new BlockHeader(version,index, previousHash, timestamp, merkleRoot,difficulty,nonce)
 	const blockhash = calculateHash(version, previousHash,index, timestamp, merkleRoot,difficulty,nonce) 
-	const miner = "04771c607e00d4a4107fad6612f366fe42b7330b2962134ca6b8794520d3af1178c1c855049fc256f1e578dde271057a21b48382dc149e226290bd0db8f5f89290"
+	const miner = "04b99c23a7166fe2bc0c2b1e019e72ca7f7331aa6902e7e3046009440e8f429b44aa8d088c5ccc162f389f38cffcfff65d196ec83ed8b60d5f867cbba5e7f18a94"
 	
 	addGenesisDB(blockhash,version, previousHash,index, timestamp, merkleRoot,difficulty,nonce,rebody,miner)
 
@@ -101,6 +102,7 @@ function calculateHash(version, index, previousHash, timestamp, merkleRoot,diffi
 
 // 블럭 생성 함수) 새로운 블럭 생성
 function nextBlock(bodyData){
+	console.log("바디 데이터 : ",bodyData)
 	const prevBlock = getLastBlock();
 	const version = getCurrentVersion();
 	const index = prevBlock.header.index + 1;
@@ -110,7 +112,7 @@ function nextBlock(bodyData){
 	const merkleRoot = tree.root() || '0'.repeat(64);
 	const difficulty = getDifficulty(getBlocks());
 	let nonce = 0;
-	const miner = getPublicKeyFromWallet();
+	const miner = getPublicKeyFromWallet().toString();
 	const header = findBlock(version, index, previousHash, timestamp, merkleRoot,difficulty,nonce) 
 	console.log(header)
 	const blockhash = calculateHash(version, index, previousHash, timestamp, merkleRoot,difficulty,nonce = header.nonce)
@@ -127,9 +129,9 @@ function addBlock(newBlock){
 		
 		addBlockDB(newBlock)
 
-		return true;
+		return resultMsg[0];
 	}
-	return false;
+	return resultMsg[1];
 }
 
 //=====================유효성 검증 코드들========================
@@ -140,32 +142,26 @@ function isValidNewBlock(newBlock, previousBlock){
 	console.log("신규 블록 인덱스",newBlock.header.index);
 	console.log("이전 블록 인덱스",previousBlock.header.index)
     if (isValidBlockStructure(newBlock) == false) {
-		console.log('오류! 유효하지 않은 블록입니다.');
-        return false;
+		return resultMsg[3];
     }
     else if (newBlock.header.index !== previousBlock.header.index + 1) {
-		console.log('오류! 인덱스 값이 유효하지 않습니다.');
-        return false;
+		return resultMsg[4];
     }
     else if (createHash(previousBlock) !== newBlock.header.previousHash){
-		console.log('오류! 이전 블럭 해시값과 신규 블럭의 이전 해시값이 일치하지 않습니다.');
-        return false;
+		return resultMsg[5];
     }
     else if ((newBlock.body.length === 0 && ('0'.repeat(64) !== newBlock.header.merkleRoot) )
 	||( newBlock.body.length !== 0 && (merkle("sha256").sync(newBlock.body).root() !== newBlock.header.merkleRoot))
 	) {
-		console.log('오류! 머클루트 값이 유효하지 않습니다.');
-        return false;
+		return resultMsg[6];
     }
     // else if (!isValidTimestamp(newBlock, previousBlock)) {
-		// 	    console.log("오류! 타임스탬프")
-		// 	    return false;
+		// 	    return resultMsg[7];
 		// }
-		else if (!hashMatchesDifficulty(createHash(newBlock), newBlock.header.difficulty)){
-			console.log("오류! 신규 블럭의 해시 앞자리와 difficulty 자릿수가 일치하지 않음");
-			return false;
-		}
-		return true;
+	else if (!hashMatchesDifficulty(createHash(newBlock), newBlock.header.difficulty)){
+		return resultMsg[8];
+	}
+	return resultMsg[2];
 	}
 	
 	// 검증 함수) 블록 구조 검증
@@ -231,13 +227,13 @@ function isValidNewBlock(newBlock, previousBlock){
 			if ((newBlocks.length > Blocks.length) 
 			||(newBlocks.length === Blocks.length) && random.boolean()) {
 				Blocks = newBlocks;
-				console.log("교체 완료!")
 				p2pserver.broadcast(p2pserver.responseLatestMsg())
 				replaceBlockDB(newBlocks)
 			}
+			return resultMsg[9];
 		} 
 		else {
-			console.log('교체할 체인이 유효하지 않습니다.');
+			return resultMsg[10];
 		}
 	};
 	

@@ -6,13 +6,16 @@
 const express = require('express')
 const bodyParser =require('body-parser')
 const { sequelize } = require('../models');
+const cors = require('cors')
 
 const BC = require('./blockchain')
 const p2pserver = require('./network')
-const {initWallet,getPublicKeyFromWallet} = require('./wallet');
+const {initWallet,getPublicKeyFromWallet,inputPrivateKey} = require('./wallet');
 const {importBlockDB} = require('./util')
-
+const BlockDB = require('../models/blocks')
 const { version } = require('elliptic');
+const bs58 = require('bs58')
+const {resultMsg} = require('./messege')
 
 //env 설정하기 : export HTTP_PORT=3001
 //env 설정확인 : env | grep HTTP_PORT
@@ -33,25 +36,31 @@ function initHttpServer(httpport){
     
     console.log("내부")
     const app = express()
+    app.use(cors())
     app.use(bodyParser.json())
         
     app.get("/peers",(req,res)=>{
         console.log("피어확인 요청")
-        res.send(p2pserver.getSockets().map(s=> s._socket.remoteAddress + ':' + s._socket.remotePort));
+        res.send(p2pserver.getSockets());
     })
 
     app.post("/addPeers",(req,res)=>{
         console.log("피어추가")
-        const data = req.body.data
-        console.log("데이터터터", data)
-        p2pserver.connectToPeers(data);
-        res.send()
+        console.log(req.body.url)
+        const data = req.body.url
+        console.log(typeof data)
+        p2pserver.getSockets().push(data)
+        p2pserver.connectToPeers([data]);
+        res.json({msg: "통신 포트에 추가하였습니다.",port:data})
+
     })
     
 
     app.get("/blocks",(req,res)=>{ 
         console.log("블록 확인 요청옴")
-        res.send(BC.getBlocks())
+        BlockDB.findAll({where:{},order: [["index", "DESC"]]}).then(data=>{
+            res.send(data)
+        })
         
     })
     
@@ -61,10 +70,11 @@ function initHttpServer(httpport){
         const data = [req.body.data] || []
         console.log(data)
         const block = BC.nextBlock(data)
-        // console.log(block)
         BC.addBlock(block)
-        //const result = BC.addBlock(block)
-        res.send(BC.getBlocks())
+        const miningResult = BC.addBlock(block)
+        console.log(miningResult)
+        res.send([BC.getBlocks(),miningResult])
+        
     })
     
     // 버전 확인
@@ -72,9 +82,32 @@ function initHttpServer(httpport){
         console.log("버전 확인 요청옴")
         res.send(BC.getVersion())
     })
-    app.get("/last",(req,res)=>{
 
-        res.send(BC.getLastBlock())
+    //마이너 확인
+    app.get("/miner",(req,res)=>{
+        res.send(getPublicKeyFromWallet().toString())
+    })
+    //참여노드 확인
+    app.get("/chenkOn",(req,res)=>{
+            res.send("a")
+    })
+
+    // 지갑 생성확인
+    app.post('/wallet',(req,res)=>{
+        // fs.readFile('wallet/default/private_key.txt','utf-8',(err,data)=>{
+        //     res.send(data)
+        // })
+
+        console.log(req.body.data)
+        const inputKey = inputPrivateKey(req.body.data);
+        const myPrivateKey = getPublicKeyFromWallet()
+        if(inputKey == myPrivateKey){
+            const bytes = Buffer.from(myPrivateKey, 'hex')
+            console.log("bs58",bytes)
+            const address = bs58.encode(bytes)
+            res.json({result : true ,addr:address})
+        }
+
     })
     
     // 작업 종료
@@ -118,7 +151,7 @@ function initHttpServer(httpport){
 initWallet();
 importBlockDB()
 
-p2pserver.connectToPeers(["ws://localhost:6002","ws://localhost:6003"]);
+// p2pserver.connectToPeers(["ws://localhost:6002","ws://localhost:6003"]);
 initHttpServer(http_port)
 p2pserver.initP2PServer(p2p_port)
 

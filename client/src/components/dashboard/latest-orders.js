@@ -1,3 +1,5 @@
+import { useState,useEffect } from 'react';
+import axios from 'axios'
 import { format } from 'date-fns';
 import { v4 as uuid } from 'uuid';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -17,182 +19,144 @@ import {
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import { SeverityPill } from '../severity-pill';
 
-const orders = [
-  {
-    id: uuid(),
-    hash: '00000007d7as8ef4s5d6f4sa8eaf4a6s4fe8e5dsadf',
-    amount: 30.5,
-    customer: {
-      difficulty: '1'
-    },
-    createdAt: 1555016400000,
-    status: 'Node3',
-    merkleroot: 'ge8423d7d7as8ef4s5d6f4sa8eaf4a6s4fe8e5dsadf',
-    size: '0.13 bytes',
-    nonce: '518,483'
-  },
-  {
-    id: uuid(),
-    hash: '0000000532ds8ef4s5d6f4sa8eaf4a6s4fe8e5dsadf',
-    amount: 25.1,
-    customer: {
-      difficulty: '1'
-    },
-    createdAt: 1555016400000,
-    status: 'NODE1',
-    merkleroot: 'ge8423d7d7as8ef4s5d6f4sa8eaf4a6s4fe8e5dsadf',
-    size: '0.13 bytes',
-    nonce: '518,483'
-  },
-  {
-    id: uuid(),
-    hash: '000000052fd8ef4s5d6f4sa8eaf4a6s4fe8e5dsadf',
-    amount: 10.99,
-    customer: {
-      difficulty: '1'
-    },
-    createdAt: 1554930000000,
-    status: 'NODE2',
-    merkleroot: 'ge8423d7d7as8ef4s5d6f4sa8eaf4a6s4fe8e5dsadf',
-    size: '0.13 bytes',
-    nonce: '518,483'
-  },
-  {
-    id: uuid(),
-    hash: '000000053dfs8ef4s5d6f4sa8eaf4a6s4fe8e5dsadf',
-    amount: 96.43,
-    customer: {
-      difficulty: '0'
-    },
-    createdAt: 1554757200000,
-    status: 'Node3',
-    merkleroot: 'ge8423d7d7as8ef4s5d6f4sa8eaf4a6s4fe8e5dsadf',
-    size: '0.13 bytes',
-    nonce: '518,483'
-  },
-  {
-    id: uuid(),
-    hash: '0000000643fs8ef4s5d6f4sa8eaf4a6s4fe8e5dsadf',
-    amount: 32.54,
-    customer: {
-      difficulty: '0'
-    },
-    createdAt: 1554670800000,
-    status: 'NODE1',
-    merkleroot: 'ge8423d7d7as8ef4s5d6f4sa8eaf4a6s4fe8e5dsadf',
-    size: '0.13 bytes',
-    nonce: '518,483'
-  },
-  {
-    id: uuid(),
-    hash: '000000023fds8ef4s5d6f4sa8eaf4a6s4fe8e5dsadf',
-    amount: 16.76,
-    customer: {
-      difficulty: '0'
-    },
-    createdAt: 2554670800000,
-    status: 'NODE1',
-    merkleroot: 'ge8423d7d7as8ef4s5d6f4sa8eaf4a6s4fe8e5dsadf',
-    size: '0.13 bytes',
-    nonce: '518,483'
-  }
-];
 
-export const LatestOrders = (props) => (
-  <Card {...props}>
-    <CardHeader title="실시간 블록현황" />
-    <PerfectScrollbar>
-      <Box sx={{ minWidth: 500 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                Hash
-              </TableCell>
-              <TableCell>
-                Difficulty
-              </TableCell>
-              <TableCell>
-                Timestamp
-              </TableCell>
-              <TableCell>
-                Node
-              </TableCell>
-              <TableCell sortDirection="desc">
-                <Tooltip
-                  enterDelay={300}
-                  title="Sort"
-                >
-                  <TableSortLabel
-                    active
-                    direction="desc"
+export const LatestOrders = (props) => {
+  
+  const [blockInfo,setBlockInfo] = useState("")
+  const [node_1,setNode_1] = useState("")
+  const [node_2,setNode_2] = useState("")
+  const [node_3,setNode_3] = useState("")
+
+
+  useEffect(() => {
+    const getBlockInfo = async()=>{
+        await axios.get('http://localhost:3001/blocks').then(res=>{
+            console.log("마이너 : ", res.data.miner)  
+            setBlockInfo(res.data)
+        }).catch(()=>{console.log(" 서버가 열려있지 않습니다.")})
+    }
+
+    getBlockInfo()
+  }, [props.blocks])
+
+  useEffect(() => {
+
+    const nodeCheck = async()=>{
+          await axios.get('http://localhost:3001/miner').then(res=>{
+          console.log(res.data)  
+              setNode_1(res.data)
+          }).catch(()=>{console.log(" 서버가 열려있지 않습니다.")})
+          await axios.get('http://localhost:3002/miner').then(res=>{
+              console.log(res.data)  
+              setNode_2(res.data)
+          }).catch(()=>console.log("요청하는 서버가 열려있지 않습니다."))
+          await axios.get('http://localhost:3003/miner').then(res=>{
+              console.log(res.data)  
+              setNode_3(res.data)
+          }).catch(()=>console.log("요청하는 서버가 열려있지 않습니다."))
+    }
+    nodeCheck()
+  }, [])
+
+  return (
+    <Card {...props}>
+      <CardHeader title="실시간 블록현황" />
+      <PerfectScrollbar>
+        <Box sx={{ minWidth: 500 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  Hash
+                </TableCell>
+                <TableCell>
+                  Difficulty
+                </TableCell>
+                <TableCell>
+                  Timestamp
+                </TableCell>
+                <TableCell>
+                  Node
+                </TableCell>
+                <TableCell sortDirection="desc">
+                  <Tooltip
+                    enterDelay={300}
+                    title="Sort"
                   >
-                    MerkleRoot
-                  </TableSortLabel>
-                </Tooltip>
-              </TableCell>
-              <TableCell>
-                Size
-              </TableCell>
-              <TableCell>
-                Nonce
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {orders.map((order) => (
-              <TableRow
-                hover
-                key={order.id}
-              >
-                <TableCell>
-                  {order.hash}
+                    <TableSortLabel
+                      active
+                      direction="desc"
+                    >
+                      MerkleRoot
+                    </TableSortLabel>
+                  </Tooltip>
                 </TableCell>
                 <TableCell>
-                  {order.customer.difficulty}
+                  Size
                 </TableCell>
                 <TableCell>
-                  {format(order.createdAt, 'dd/MM/yyyy')}
-                </TableCell>
-                <TableCell>
-                  <SeverityPill
-                    color={(order.status === 'NODE1' && 'success')
-                    || (order.status === 'NODE2' && 'error')
-                    || 'warning'}
-                  >
-                    {order.status}
-                  </SeverityPill>
-                </TableCell>
-                <TableCell>
-                  {order.merkleroot}
-                </TableCell>
-                <TableCell>
-                  {order.size}
-                </TableCell>
-                <TableCell>
-                  {order.nonce}
+                  Nonce
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Box>
-    </PerfectScrollbar>
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'flex-end',
-        p: 2
-      }}
-    >
-      <Button
-        color="primary"
-        endIcon={<ArrowRightIcon fontSize="small" />}
-        size="small"
-        variant="text"
+            </TableHead>
+            <TableBody>
+              {blockInfo && blockInfo.map((block) => (
+                <TableRow
+                  hover
+                  key={block.index}
+                >
+                  <TableCell style={{fontSize:13}}>
+                    {block.hash}
+                  </TableCell>
+                  <TableCell>
+                    {block.difficulty}
+                  </TableCell>
+                  <TableCell style={{fontSize:13}}>
+                    {format(block.timestamp, 'dd/MM/yyyy')}
+                    {/* {new Date(block.header.timestamp).getTime()} */}
+                  </TableCell>
+                  <TableCell>
+                    <SeverityPill
+                      color={(block.miner == node_1 && 'primary')
+                      || (block.miner == node_2 && 'secondary')
+                      || (block.miner  == node_3 && 'success')
+                      || 'warning'}
+                    >
+              
+                      {(block.miner == node_1 && 'NODE1')|| (block.miner == node_2 && 'NODE2') || (block.miner  == node_3 && 'NODE3')}
+                    </SeverityPill>
+                  </TableCell>
+                  <TableCell style={{fontSize:13}}>
+                    {block.merkleRoot}
+                  </TableCell>
+                  <TableCell>
+                    {/* {block.header.size} */}
+                  </TableCell>
+                  <TableCell>
+                    {block.nonce}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
+      </PerfectScrollbar>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          p: 2
+        }}
       >
-        내림차순
-      </Button>
-    </Box>
-  </Card>
+        <Button
+          color="primary"
+          endIcon={<ArrowRightIcon fontSize="small" />}
+          size="small"
+          variant="text"
+        >
+          내림차순
+        </Button>
+      </Box>
+    </Card>
 );
+}

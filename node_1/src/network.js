@@ -35,6 +35,7 @@ function  getSockets(){
 
 // 특정 노드에 메세지를 던지는 역할
 function write(ws, message){
+    console.log("wswswsws  :   ",ws)
     ws.send(JSON.stringify(message)) 
 }
 const broadcastLatest = () => {
@@ -43,6 +44,8 @@ const broadcastLatest = () => {
 
 // 통신이 되어있는 노드 모두에게 메세지 전달
 function broadcast(message) {
+    console.log("=====무슨 메세질까====")
+    console.log(message)
     sockets.forEach( socket =>{
         console.log("message==",message)
         write(socket,message)
@@ -51,6 +54,7 @@ function broadcast(message) {
 
 // 클라이언트에서 웹소켓 접속
 function connectToPeers(newPeers) {
+    console.log("뉴 피어",newPeers)
     newPeers.forEach(peer=>{
 
         const ws = new WebSocket(peer)
