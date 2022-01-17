@@ -10,7 +10,6 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 export const Sales = (props) => {
   const message = props.resultMsg
-  console.log("들오는 메세지 궁금",message)
 
   return (
     <Card {...props}>
@@ -23,7 +22,7 @@ export const Sales = (props) => {
         //     Last 7 block
         //   </Button>
         // )}
-        title="노드별 채굴속도"
+        title="채굴 기록"
       />
       <Divider />
       <CardContent>
@@ -41,7 +40,7 @@ export const Sales = (props) => {
             <TableHead>
                 <TableRow>
                   <TableCell>
-                    block
+                    block_Index
                   </TableCell>
                   <TableCell>
                     type
@@ -62,7 +61,7 @@ export const Sales = (props) => {
                 return(
                 <TableRow>
                   <TableCell>
-                    block
+                    {msg.blockIndex}
                   </TableCell>
                   <TableCell>
                     {msg.type}

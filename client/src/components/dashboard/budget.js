@@ -1,8 +1,10 @@
 import { Avatar, Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import MoneyIcon from '@mui/icons-material/Money';
+import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import axios from 'axios';
 import { useState,useEffect } from 'react';
+
 
 export const Budget = (props) => {
  
@@ -28,59 +30,53 @@ export const Budget = (props) => {
     <CardContent>
       <Grid
         container
-        spacing={3}
+        spacing={1}
         sx={{ justifyContent: 'space-between' }}
       >
         <Grid item>
-          <Typography
-            color="textSecondary"
-            gutterBottom
-            variant="overline"
-          >
-            총 블록수
-          </Typography>
-          <Typography
-            color="textPrimary"
-            variant="h4"
-          >
-            {allBlocks}블록
-          </Typography>
+            <RequestQuoteIcon sx={{color:"#fff", height: 50,width: 50}}/>
         </Grid>
         <Grid item>
           <Typography
-            color="textSecondary"
+            color="#fff"
             gutterBottom
-            variant="overline"
+            variant="h5" 
+            fontWeight={500}
           >
-            내가 생성한 블록
+            Block
+            <span style={{marginLeft:20}}>    {allBlocks}</span>
+          <Typography
+            color="#fff"
+            variant="h5"
+          >
+          </Typography>
           </Typography>
           <Typography
-            color="textPrimary"
-            variant="h4"
+            color="#fff"
+            gutterBottom
+            variant="h5"
+            fontWeight={500}
           >
-            {allBlocks}블록
+            My Blocks
+          <span style={{marginLeft:20}}>{allBlocks}</span>
+          </Typography>
+          <Typography
+            color="#fff"
+            variant="h5"
+          >
           </Typography>
         </Grid>
         <Grid item>
-          <Avatar
-            sx={{
-              backgroundColor: 'error.main',
-              height: 56,
-              width: 56
-            }}
-          >
-            <MoneyIcon />
-          </Avatar>
         </Grid>
       </Grid>
-      <Box
+      {/* <Box
         sx={{
           pt: 2,
           display: 'flex',
           alignItems: 'center'
         }}
       >
-        <ArrowDownwardIcon color="error" />
+        <ViewColumnIcon color="error" />
         <Typography
           color="error"
           sx={{
@@ -96,7 +92,7 @@ export const Budget = (props) => {
         >
           Since last month
         </Typography>
-      </Box>
+      </Box> */}
     </CardContent>
   </Card>
 );

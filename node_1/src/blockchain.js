@@ -12,14 +12,29 @@ const {
 	replaceBlockDB,
 	addBlockDB,
 	addGenesisDB,
+	setTime
 } = require("./util")
 const {getPublicKeyFromWallet} = require('./wallet')
-const {resultMsg} = require('./messege')
+const {
+	resultMsg,
+	miningSuccess,
+	miningFail,
+	vailidationSuccess,
+	vailidationFail1,
+	vailidationFail2,
+	vailidationFail3,
+	vailidationFail4,
+	vailidationFail5,
+	vailidationFail6,
+	replaceSuccess,
+	replaceFail
+
+} = require('./messege')
 
 
 
 // 현재 개발 편의상 임의값으로 설정해둔 상태
-const BLOCK_GENERATION_INTERVAL = 200 //블록이 생성되는 간격  
+const BLOCK_GENERATION_INTERVAL = 5 //블록이 생성되는 간격  
 const DIFFICULTY_ADJUSTMENT_INTERVAL = 2 //  난이도가 조정되는 간격
 
 // 블록 구조 설정
@@ -122,16 +137,16 @@ function nextBlock(bodyData){
 // 블록 생성 함수) 생성한 블록을 체인에 연결시키는 함수
 function addBlock(newBlock){
 	const p2pserver = require('./network')
+	let time = setTime()
 	if (isValidNewBlock(newBlock, getLastBlock())) {
 		Blocks.push(newBlock);
 		p2pserver.broadcastLatest()
 		console.log('블록 추가')
 		
 		addBlockDB(newBlock)
-
-		return resultMsg[0];
+		return miningSuccess(newBlock,time);
 	}
-	return resultMsg[1];
+	return miningFail(newBlock,time);
 }
 
 //=====================유효성 검증 코드들========================
@@ -141,27 +156,29 @@ function isValidNewBlock(newBlock, previousBlock){
 	
 	console.log("신규 블록 인덱스",newBlock.header.index);
 	console.log("이전 블록 인덱스",previousBlock.header.index)
+	let time = setTime()
+		
     if (isValidBlockStructure(newBlock) == false) {
-		return resultMsg[3];
+		return vailidationFail1(newBlock,time);
     }
     else if (newBlock.header.index !== previousBlock.header.index + 1) {
-		return resultMsg[4];
+		return vailidationFail2(newBlock,time);
     }
     else if (createHash(previousBlock) !== newBlock.header.previousHash){
-		return resultMsg[5];
+		return vailidationFail3(newBlock,time);
     }
     else if ((newBlock.body.length === 0 && ('0'.repeat(64) !== newBlock.header.merkleRoot) )
 	||( newBlock.body.length !== 0 && (merkle("sha256").sync(newBlock.body).root() !== newBlock.header.merkleRoot))
 	) {
-		return resultMsg[6];
+		return vailidationFail4(newBlock,time);
     }
-    // else if (!isValidTimestamp(newBlock, previousBlock)) {
-		// 	    return resultMsg[7];
-		// }
+    else if (!isValidTimestamp(newBlock, previousBlock)) {
+			    return vailidationFail5(newBlock,time);
+		}
 	else if (!hashMatchesDifficulty(createHash(newBlock), newBlock.header.difficulty)){
-		return resultMsg[8];
+		return vailidationFail6(newBlock,time);
 	}
-	return resultMsg[2];
+	return vailidationSuccess(newBlock,time);
 	}
 	
 	// 검증 함수) 블록 구조 검증
@@ -202,8 +219,8 @@ function isValidNewBlock(newBlock, previousBlock){
 	// 검증 함수) 블록 생성 간격 조절(해킹방지) & 블록 검증 시간 카운트다운
 	// 바로바로 블록 생성 확인하려고 개발할 동안 비활성화 해 둠
 	function isValidTimestamp(newBlock,prevBlock){
-		return ( (newBlock.header.timestamp - prevBlock.header.timestamp) > 1 ) 
-		&& getCurrentTimestamp() - newBlock.header.timestamp  < 60
+		return(prevBlock.timestamp - 60 < newBlock.timestamp)
+        && newBlock.timestamp - 60 < getCurrentTimestamp();
 	}
 	
 	// 검증 함수) 신규 블록의 해시값과 difficulty값 대입 시 해시 앞자리 일치 여부 검증
@@ -222,7 +239,7 @@ function isValidNewBlock(newBlock, previousBlock){
 	// 체인 교체 함수
 	const replaceChain = (newBlocks) => {
 		const p2pserver = require('./network')
-		console.log(newBlocks)
+		let time = setTime()
 		if (isValidChain(newBlocks)){
 			if ((newBlocks.length > Blocks.length) 
 			||(newBlocks.length === Blocks.length) && random.boolean()) {
@@ -230,10 +247,10 @@ function isValidNewBlock(newBlock, previousBlock){
 				p2pserver.broadcast(p2pserver.responseLatestMsg())
 				replaceBlockDB(newBlocks)
 			}
-			return resultMsg[9];
+			return replaceSuccess(newBlocks,time)
 		} 
 		else {
-			return resultMsg[10];
+			return replaceFail(newBlocks,time)
 		}
 	};
 	

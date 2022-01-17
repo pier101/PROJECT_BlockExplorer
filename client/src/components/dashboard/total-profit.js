@@ -1,5 +1,5 @@
 import { Avatar, Card, CardContent, Grid, Typography, Button,Box,TextField } from '@mui/material';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import ConstructionOutlinedIcon from '@mui/icons-material/ConstructionOutlined';
 import axios from 'axios';
 import { useState } from 'react';
 
@@ -8,7 +8,7 @@ export const TotalProfit = (props) =>{
   
   const minning = async()=>{
     
-    await axios.post('http://localhost:3001/mineBlock',).then(res=>{
+    await axios.post('http://localhost:3001/mineBlock',{data:transaction}).then(res=>{
       console.log("받은 데이터",res.data)
       props.onCreate(res.data)
     })
@@ -27,22 +27,26 @@ export const TotalProfit = (props) =>{
         sx={{ justifyContent: 'space-between' }}
       >
         <Grid item>
+              <ConstructionOutlinedIcon sx={{color:"#fff",height: 50,width: 50}} />
+          </Grid>
+        <Grid item sx={{width:270}}>
           <Typography
-            color="textSecondary"
+            color="#fff"
             gutterBottom
-            variant="overline"
-
+            variant="h5" 
+            fontWeight={500}
           >
-            거래 내용 입력란
+            Mining
           </Typography>
           <Box>
-            <TextField id="outlined-basic" variant="outlined" size="small" onChange={handleTransaction}/>
+            <TextField id="outlined-basic" variant="outlined" label="거래 내용 입력란" size="small" style={{width:120}} onChange={handleTransaction}/>
+          <Button variant='outlined'  style={{backgroundColor:"#fff",color:"#7070E3",width:120, height:40,marginLeft:10,border:"2px solid white"}} onClick={minning}>
+          <b style={{fontSize:16}}>
+          start
+
+          </b>
+        </Button>
           </Box>
-        <Button variant='contained'  style={{backgroundColor:'#00838f'}} onClick={minning}>
-        <b style={{fontSize:10}}>
-        채굴하기
-        </b>
-      </Button>
         </Grid>
         <Grid item>
         </Grid>

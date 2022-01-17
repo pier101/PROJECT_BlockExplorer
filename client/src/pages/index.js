@@ -20,7 +20,6 @@ const Dashboard = () => {
   const handleBlockLength = (data)=>{
     setBlockLength(data[0].length)
     setBlock(data[0])
-    const result = [];
     console.log("000000000",...miningResult)
     setMiningResult([data[1],...miningResult])
   }
@@ -53,7 +52,7 @@ const Dashboard = () => {
             sm={6}
             xs={12}
             >
-            <TotalProfit sx={{ height: '100%' }} onCreate={handleBlockLength}/>
+            <TotalProfit style={{backgroundColor:"#7070E3"}} sx={{ height: '85%' }} onCreate={handleBlockLength}/>
             {/* onCreate={handleBlockLength} */}
           </Grid>
           <Grid
@@ -63,7 +62,7 @@ const Dashboard = () => {
             sm={6}
             xs={12}
             >
-            <TasksProgress />
+            <TasksProgress sx={{ height: '85%' }} style={{backgroundColor:"#5A78F0"}}/>  
           </Grid>
           <Grid
             item
@@ -72,7 +71,7 @@ const Dashboard = () => {
             xl={3}
             xs={12}
             >
-            <Budget blocks={blockLength}/>
+            <Budget blocks={blockLength} sx={{ height: '85%' }} style={{backgroundColor:"#25B0E8"}}/>
             {/* blocks={blockLength} */}
           </Grid>
           <Grid
@@ -82,7 +81,7 @@ const Dashboard = () => {
             sm={6}
             xs={12}
             >
-            <TotalCustomers/>
+            <TotalCustomers sx={{ height: '85%' }} style={{backgroundColor:"#536D8B"}}/>
           </Grid>
           <Grid
             item

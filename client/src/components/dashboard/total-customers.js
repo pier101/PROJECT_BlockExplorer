@@ -1,19 +1,20 @@
 import { Avatar, Box, Card, CardContent, Grid, Typography,Button,TextField } from '@mui/material';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import PeopleIcon from '@mui/icons-material/PeopleOutlined';
+import ConnectWithoutContactOutlinedIcon from '@mui/icons-material/ConnectWithoutContactOutlined';
 import { useState,useEffect } from 'react';
 import axios from 'axios';
 
 
 export const TotalCustomers = (props) => {
   const [nodeChech,setNodeCheck] = useState(0)
-  const [inputPort,setInputPort] = useState([])
-  const [connectPort,setConnectPort] = useState()
+  const [inputPort,setInputPort] = useState()
+  const [connectPort,setConnectPort] = useState([])
   
   const addNode = async()=>{
     await axios.post("http://localhost:3001/addPeers", {url: `ws://localhost:${inputPort}`}).then(res=>{
       alert(res.data.msg)
-      setConnectPort(inputPort=>[...inputPort,res.data.port])
+      console.log(res.data)
+      console.log(connectPort)
+      setConnectPort([...connectPort,res.data.port])
 
     })
   }
@@ -49,16 +50,36 @@ export const TotalCustomers = (props) => {
   return (
   <Card {...props}>
     <CardContent>
-      <Grid container sx={{justifyContent:'space-around'}}>
+      <Grid container  sx={{justifyContent:'space-around'}}>
+      <Typography
+            color="#fff"
+            gutterBottom
+            variant="h6" 
+            fontWeight={600}
+          >
+            Node
         <Box>
-        <TextField id="outlined-basic" variant="outlined" size="small" onChange={handlePort}/>
-          <Button variant='contained' onClick={addNode}>
-            통신 요청
-          </Button>
+           <TextField id="outlined-basic" variant="outlined" size="small" label="port 입력" style={{width:75,marginRight:5,marginTop:3}} onChange={handlePort}/>
+           <Button variant='contained' variant="outlined" onClick={addNode} style={{backgroundColor:"#fff",color:"#536D8B",width:20,marginTop:3, padding:5,border:"2px solid white"}}>
+           <ConnectWithoutContactOutlinedIcon/>
+            </Button>
         </Box>
-        <Box>
-        {connectPort}
-        </Box>
+          </Typography>
+          <Typography
+                 color="#fff"
+                 gutterBottom
+                 variant="h6" 
+                 fontWeight={600}
+          >
+            Network Node
+          <Box>
+            {connectPort && connectPort.map(port=>{
+              return(
+                <div style={{color:"#fff",fontWeight:400,fontSize:16}}>{port}</div>
+              )
+            })}
+          </Box>
+          </Typography>
 
       </Grid>
       {/* <Grid
