@@ -13,9 +13,19 @@ import { NavItem } from "./nav-item";
 
 const items = [
   {
-    href: "/",
+    href: "/node1",
     icon: <ChartBarIcon fontSize="small" />,
-    title: "메인",
+    title: "node1",
+  },
+  {
+    href: "/node2",
+    icon: <ChartBarIcon fontSize="small" />,
+    title: "node2",
+  },
+  {
+    href: "/node3",
+    icon: <ChartBarIcon fontSize="small" />,
+    title: "node3",
   },
   {
     href: "/customers",
@@ -165,7 +175,7 @@ export const DashboardSidebar = (props) => {
         open
         PaperProps={{
           sx: {
-            backgroundColor: "neutral.900",
+            backgroundColor: "neutral.800",
             color: "#FFFFFF",
             width: 280,
           },

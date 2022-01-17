@@ -1,2 +1,2 @@
 #!/bin/bash
-node _main.js &
+node main.js &

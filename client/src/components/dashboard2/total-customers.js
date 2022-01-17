@@ -10,7 +10,7 @@ export const TotalCustomers = (props) => {
   const [connectPort,setConnectPort] = useState([])
   
   const addNode = async()=>{
-    await axios.post("http://localhost:3001/addPeer", {port: inputPort}).then(res=>{
+    await axios.post("http://localhost:3002/addPeer", {port: inputPort}).then(res=>{
       // alert(res.data.msg)
       console.log(res.data)
       console.log(connectPort)

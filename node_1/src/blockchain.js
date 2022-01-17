@@ -1,7 +1,7 @@
 
 //  [ 블록의 생성, 검증, 합의 알고리즘을 포함 / 프로토콜을 변경하려면 여기서 수정 ]
 // ===========================================================================
-
+require("dotenv").config({ path: "../.env" });
 const cryptojs = require('crypto-js')
 const merkle = require('merkle')
 const random = require('random');
@@ -33,9 +33,10 @@ const {
 
 
 
+
 // 현재 개발 편의상 임의값으로 설정해둔 상태
-const BLOCK_GENERATION_INTERVAL = 5 //블록이 생성되는 간격  
-const DIFFICULTY_ADJUSTMENT_INTERVAL = 2 //  난이도가 조정되는 간격
+// const BLOCK_GENERATION_INTERVAL = 30 //블록이 생성되는 간격  
+// const DIFFICULTY_ADJUSTMENT_INTERVAL = 3 //  난이도가 조정되는 간격
 
 // 블록 구조 설정
 class Block{
@@ -141,6 +142,8 @@ function addBlock(newBlock){
 	if (isValidNewBlock(newBlock, getLastBlock())) {
 		Blocks.push(newBlock);
 		p2pserver.broadcastLatest()
+
+		console.log("결과일로 오나..?",p2pserver.broadcastLatest())
 		console.log('블록 추가')
 		
 		addBlockDB(newBlock)
@@ -217,7 +220,7 @@ function isValidNewBlock(newBlock, previousBlock){
 	}
 	
 	// 검증 함수) 블록 생성 간격 조절(해킹방지) & 블록 검증 시간 카운트다운
-	// 바로바로 블록 생성 확인하려고 개발할 동안 비활성화 해 둠
+
 	function isValidTimestamp(newBlock,prevBlock){
 		return(prevBlock.timestamp - 60 < newBlock.timestamp)
         && newBlock.timestamp - 60 < getCurrentTimestamp();
@@ -244,7 +247,7 @@ function isValidNewBlock(newBlock, previousBlock){
 			if ((newBlocks.length > Blocks.length) 
 			||(newBlocks.length === Blocks.length) && random.boolean()) {
 				Blocks = newBlocks;
-				p2pserver.broadcast(p2pserver.responseLatestMsg())
+				p2pserver.broadcastLatest()
 				replaceBlockDB(newBlocks)
 			}
 			return replaceSuccess(newBlocks,time)
@@ -276,7 +279,7 @@ function isValidNewBlock(newBlock, previousBlock){
 	
 	function getDifficulty(blocks){
 		const lastBlock = blocks[blocks.length - 1];
-		if(lastBlock.header.index !== 0 && (lastBlock.header.index % DIFFICULTY_ADJUSTMENT_INTERVAL === 0)){
+		if(lastBlock.header.index !== 0 && (lastBlock.header.index % process.env.DIFFICULTY_ADJUSTMENT_INTERVAL === 0)){
 			console.log("여기로 들오자")
 			return	getAdjustDifficulty(lastBlock,blocks)
 		} else{
@@ -286,12 +289,12 @@ function isValidNewBlock(newBlock, previousBlock){
 	
 	// 난이도 조정 함수
 	function getAdjustDifficulty(lastBlock,blocks){
-		const prevAdjustmentBlock = blocks[blocks.length - DIFFICULTY_ADJUSTMENT_INTERVAL];
+		const prevAdjustmentBlock = blocks[blocks.length - process.env.DIFFICULTY_ADJUSTMENT_INTERVAL];
 		//실제 걸린 시간
 		const elapsedTime = lastBlock.header.timestamp - prevAdjustmentBlock.header.timestamp
 		console.log("걸린시간 : ",elapsedTime)
 		//기대한시간
-		const expectedTime = BLOCK_GENERATION_INTERVAL	*DIFFICULTY_ADJUSTMENT_INTERVAL;
+		const expectedTime = process.env.BLOCK_GENERATION_INTERVAL	* process.env.DIFFICULTY_ADJUSTMENT_INTERVAL;
 		console.log("기대시간 : ",expectedTime)
 		if (expectedTime / 2 > elapsedTime) {	
 			console.log("난이도 upupup")
@@ -317,17 +320,8 @@ function isValidNewBlock(newBlock, previousBlock){
 		replaceChain,
 		hashMatchesDifficulty,
 		isValidBlockStructure,
+		createGenesisBlock,
 		Block,
 		BlockHeader,
-		Blocks
+		Blocks,
 	}
-	
-	//코드정리후
-	/*
-	웹페이지 
-	블록 마이닝
-	지갑 생성해서 연결된 다른 노드들과 블록체인을 교환
-	현재 블록들의 상황 시각화
-	지갑의 최신화된 블록은 몇 개고..
-	종료해도 데이터 남아있도록 db연결
-	*/

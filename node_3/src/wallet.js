@@ -7,7 +7,7 @@ const ecdsa = require('elliptic')  // 타원 곡선 디지털 서명 알고리�
 const ec = new ecdsa.ec("secp256k1");
 
 const privateKeyLocation = "wallet/" + (process.env.PRIVATE_KEY || "default");
-const privateKeyFile = privateKeyLocation + "/private_key";
+const privateKeyFile = privateKeyLocation + "/private_key.txt";
 
 function initWallet(){
     if(fs.existsSync(privateKeyFile)){
@@ -41,30 +41,19 @@ function getPublicKeyFromWallet(){
     const privateKey = getPrivateKeyFromWallet();
     const key = ec.keyFromPrivate(privateKey, "hex");
     return key.getPublic().encode("hex");
-
 }
 
-class Wallet {
-    constructor() {
-        this.balance = 0;
-        this.keyPair = ChainUtil.genKeyPair();
-        this.publicKey = this.keyPair.getPublic().encode("hex");
-    }
-
-    
-    toString() {
-        return `Wallet -
-            publicKey: ${this.publicKey.toString()}
-            balance  : ${this.balance}`
-    }
+function inputPrivateKey(privateKey){
+    const key = ec.keyFromPrivate(privateKey, "hex");
+    return key.getPublic().encode("hex");
 }
+// function checkWallet(){
+//     fs.readFileSync(privateKeyLocation + "/private_key.txt",'utf-8',(err,data)=>{
+//     console.log("지갑 비밀키==",data)
+//     })
+// }
 
 
-//키페어 클래스
-class ChainUtil {
-    static genKeyPair() {
-        return ec.genKeyPair();
-    }
-}
 
-module.exports = {getPublicKeyFromWallet,initWallet, Wallet}
+
+module.exports = {getPublicKeyFromWallet,initWallet,inputPrivateKey}

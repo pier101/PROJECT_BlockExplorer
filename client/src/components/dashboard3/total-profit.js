@@ -1,23 +1,18 @@
 import { Avatar, Card, CardContent, Grid, Typography, Button,Box,TextField } from '@mui/material';
 import ConstructionOutlinedIcon from '@mui/icons-material/ConstructionOutlined';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export const TotalProfit = (props) =>{
   const [transaction,setTransaction] = useState('')
   
   const minning = async()=>{
-
-    // props.onCreate(startTime)
-    // props.onCreate(finishTime)
     
-    await axios.post('http://localhost:3001/mineBlock',{data:transaction}).then(res=>{
+    await axios.post('http://localhost:3003/mineBlock',{data:transaction}).then(res=>{
       console.log("받은 데이터",res.data)
       props.onCreate(res.data)
     })
   }
-
-
 
   const handleTransaction = (e) =>{
     console.log(e.target.value)

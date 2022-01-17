@@ -8,11 +8,10 @@ const BC = require('./blockchain')
 let sockets = []
 
 function initP2PServer(p2p_port){
-    console.log("111p2p_port",p2p_port)
     const server = new WebSocket.Server({port: p2p_port}) 
     
     server.on('connection',(ws)=>{
-        console.log("connection 3001")
+        console.log("connection 3002")
         initConnection(ws)
     })
     console.log("Listening websocket port : ", + p2p_port) 
@@ -44,6 +43,8 @@ const broadcastLatest = () => {
 
 // 통신이 되어있는 노드 모두에게 메세지 전달
 function broadcast(message) {
+    console.log("=====무슨 메세질까====")
+    console.log(message)
     sockets.forEach( socket =>{
         console.log("message==",message)
         write(socket,message)
@@ -52,17 +53,16 @@ function broadcast(message) {
 
 // 클라이언트에서 웹소켓 접속
 function connectToPeers(newPeers) {
-    console.log("==========")
-    console.log(newPeers)
+    console.log("뉴 피어",newPeers)
     newPeers.forEach(peer=>{
 
         const ws = new WebSocket(peer)
 
         ws.on("open",()=> {
-            console.log("open 3001")
+            console.log("open 3002")
             initConnection(ws)
         })
-        ws.on("error",()=>console.log("connection Failed! 3001"))
+        ws.on("error",()=>console.log("connection Failed! 3002"))
     })
 }   
 
@@ -80,18 +80,18 @@ function initMessageHandler(ws){
             console.log('메세지가 없거나 제대로 파싱되지 않았습니다. \n data :' + data);
             return
         }
-        // console.log('받은 메세지 3001 : ' + JSON.stringify(message));
+        // console.log('받은 메세지 3002 : ' + JSON.stringify(message));
         switch (message.type) {
             case MessageType.QUERY_LATEST:
-                console.log("메세지 0  3001")
+                console.log("메세지 0  3002")
                 write(ws,responseLatestMsg());
                 break;
             case MessageType.QUERY_ALL:
-                console.log("메세지 1  3001")
+                console.log("메세지 1  3002")
                 write(ws,responseAllChainMsg());
                 break;
             case MessageType.RESPONSE_BLOCKCHAIN:
-                console.log("메세지 2  3001")
+                console.log("메세지 2  3002")
                 const receivedBlocks = JSON.parse(message.data);;
                 if (receivedBlocks === null) {
                     console.log('받은 블록이 유효하지 않음 : %s', JSON.stringify(message.data));
@@ -122,6 +122,8 @@ function responseAllChainMsg(){
 //블럭데이터 받았을떄
 function handleBlockChainResponse(receivedBlocks){
     console.log('블럭데이터 받았습니다.')
+    console.log("=====================")
+    console.log(receivedBlocks)
     
     // 받은 블럭 데이터 값이 없을 떄
     if (receivedBlocks.length === 0) {

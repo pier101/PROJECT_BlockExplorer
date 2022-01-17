@@ -1,16 +1,16 @@
 import Head from 'next/head';
 import { Box, Container, Grid } from '@mui/material';
-import { Budget } from '../components/dashboard/budget';
-import { LatestOrders } from '../components/dashboard/latest-orders';
-import { Sales } from '../components/dashboard/sales';
-import { TasksProgress } from '../components/dashboard/tasks-progress';
-import { TotalCustomers } from '../components/dashboard/total-customers';
-import { TotalProfit } from '../components/dashboard/total-profit';
-import { TrafficByDevice } from '../components/dashboard/traffic-by-device';
+import { Budget } from '../components/dashboard3/budget';
+import { LatestOrders } from '../components/dashboard3/latest-orders';
+import { Sales } from '../components/dashboard3/sales';
+import { TasksProgress } from '../components/dashboard3/tasks-progress';
+import { TotalCustomers } from '../components/dashboard3/total-customers';
+import { TotalProfit } from '../components/dashboard3/total-profit';
+import { TrafficByDevice } from '../components/dashboard3/traffic-by-device';
 import { DashboardLayout } from '../components/dashboard-layout';
 import {useState} from 'react'
-import {DashboardCore } from './index2';
-const Dashboard = () => {
+
+const Node2 = () => {
   
   
   const [blockLength,setBlockLength] = useState(0)
@@ -55,6 +55,17 @@ const Dashboard = () => {
             <TotalProfit style={{backgroundColor:"#7070E3"}} sx={{ height: '85%' }} onCreate={handleBlockLength}/>
             {/* onCreate={handleBlockLength} */}
           </Grid>
+          {/* <Grid
+            item
+            xl={3}
+            lg={3}
+            sm={6}
+            xs={12}
+            >
+          
+            <TotalProfit2 style={{backgroundColor:"#7070E3"}} sx={{ height: '85%' }} onCreate={handleBlockLength}/> */}
+            {/* onCreate={handleBlockLength} */}
+          {/* </Grid> */}
           <Grid
             item
             xl={3}
@@ -124,4 +135,4 @@ const Dashboard = () => {
 // );
 
 
-export default Dashboard;
+export default Node2;

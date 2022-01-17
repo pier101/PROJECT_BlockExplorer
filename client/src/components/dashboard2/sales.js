@@ -9,9 +9,8 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 export const Sales = (props) => {
-  const message = props.resultmsg
-  const result = message.msg
-  console.log("메세지 결과 ",result)
+  const message = props.resultMsg
+
   return (
     <Card {...props}>
       <CardHeader
@@ -60,20 +59,20 @@ export const Sales = (props) => {
             <TableBody>
               {message && message.map(msg=>{
                 return(
-                <TableRow >
-                  <TableCell sx={{color:"#333D4B",fontWeight:600}}>
+                <TableRow>
+                  <TableCell>
                     {msg.blockIndex}
                   </TableCell>
-                  <TableCell sx={{color:"#333D4B",fontWeight:700}}>
+                  <TableCell>
                     {msg.type}
                   </TableCell>
-                  <TableCell style={result =="실패"? {color:"red"}:{color:"#28B83E"}} sx={{fontWeight:700}}>
+                  <TableCell>
                     {msg.result}
                   </TableCell>
-                  <TableCell  sx={{fontWeight:600}}>
+                  <TableCell>
                     {msg.msg}
                   </TableCell>
-                  <TableCell sx={{color:"#333D4B",fontWeight:600}}>
+                  <TableCell>
                     {msg.time}
                   </TableCell>
                 </TableRow>

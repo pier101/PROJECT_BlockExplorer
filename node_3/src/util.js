@@ -37,6 +37,18 @@ function hexToBinary(s){
 	return ret;
 }
 
+function setTime (){
+	let time = new Date()
+	let hour = time.getHours();
+	let minutes = time.getMinutes();
+
+	
+	let year = time.getFullYear();
+	let month = time.getMonth() + 1;
+	let date = time.getDate();
+	let currentTime =year + "/" + month + "/" + date + "\n" + hour + ":" + minutes
+	return currentTime 
+}
 
 function importBlockDB() {
 	const {Block,BlockHeader,Blocks} =require('./blockchain')
@@ -123,7 +135,7 @@ function replaceBlockDB(newBlocks) {
 			difficulty: difficulty,
 			nonce:nonce,
 			body: block.body[0],
-			miner:block.miner
+			miner: block.miner
 		})
 		
 	})
@@ -136,4 +148,5 @@ module.exports = {
 	replaceBlockDB,
 	addBlockDB,
 	addGenesisDB,
+	setTime
 }

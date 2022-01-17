@@ -13,9 +13,8 @@ const p2pserver = require('./network')
 const {initWallet,getPublicKeyFromWallet,inputPrivateKey} = require('./wallet');
 const {importBlockDB} = require('./util')
 const BlockDB = require('../models/blocks')
-const { version } = require('elliptic');
 const bs58 = require('bs58')
-const {resultMsg} = require('./messege')
+require("dotenv").config({ path: "../.env" });
 
 //env 설정하기 : export HTTP_PORT=3001
 //env 설정확인 : env | grep HTTP_PORT
@@ -46,34 +45,46 @@ function initHttpServer(httpport){
 
     app.post("/addPeers",(req,res)=>{
         console.log("피어추가")
-        console.log(req.body.url)
-        const data = req.body.url
-        console.log(typeof data)
+        console.log(req.body.port)
+        const data = req.body.port
         p2pserver.getSockets().push(data)
         p2pserver.connectToPeers([data]);
         res.json({msg: "통신 포트에 추가하였습니다.",port:data})
 
     })
-    
+    app.post("/addPeer",(req,res)=>{
+        console.log("피어추가")
+        const data = `ws://localhost:${req.body.port}`
+        console.log("데이터",data)
+        p2pserver.connectToPeers([data]);
+        res.json({msg: "통신 포트에 추가하였습니다.",port:data})
+    })
 
     app.get("/blocks",(req,res)=>{ 
         console.log("블록 확인 요청옴")
         BlockDB.findAll({where:{},order: [["index", "DESC"]]}).then(data=>{
             res.send(data)
         })
-        
+    })
+    app.post("/blocksReset",(req,res)=>{ 
+        BC.getBlocks()=[BC.createGenesisBlock()]
     })
     
     // block 채굴(생성)
     app.post('/mineBlock',(req,res)=>{
+
         console.log("채굴 요청옴")
+        const timeInterver = process.env.BLOCK_GENERATION_INTERVAL
+        const blockInterver = process.env.DIFFICULTY_ADJUSTMENT_INTERVAL
+
+
         const data = [req.body.data] || []
         console.log(data)
         const block = BC.nextBlock(data)
         BC.addBlock(block)
         const miningResult = BC.addBlock(block)
         console.log(miningResult)
-        res.send([BC.getBlocks(),miningResult])
+        res.send([BC.getBlocks(),miningResult,timeInterver,blockInterver])
         
     })
     
@@ -94,10 +105,6 @@ function initHttpServer(httpport){
 
     // 지갑 생성확인
     app.post('/wallet',(req,res)=>{
-        // fs.readFile('wallet/default/private_key.txt','utf-8',(err,data)=>{
-        //     res.send(data)
-        // })
-
         console.log(req.body.data)
         const inputKey = inputPrivateKey(req.body.data);
         const myPrivateKey = getPublicKeyFromWallet()
@@ -151,7 +158,7 @@ function initHttpServer(httpport){
 initWallet();
 importBlockDB()
 
-// p2pserver.connectToPeers(["ws://localhost:6002","ws://localhost:6003"]);
+// p2pserver.connectToPeers(["ws://localhost:6002","ws://localhost:6001"]);
 initHttpServer(http_port)
 p2pserver.initP2PServer(p2p_port)
 
@@ -160,6 +167,7 @@ p2pserver.initP2PServer(p2p_port)
     <<사용한 커맨드 명령어>>
     node httpserver.js &
     curl -X POST http://localhost:3001/stop
+    curl -X POST http://localhost:3001/blocksReset
     curl -X GET http://localhost:3001/blocks | python3 -m json.tool
     curl -H "Content-type:application/json" --data "{\"data\" : \"Anything1\"}" http://localhost:3001/mineBlock
     curl -H "Content-type:application/json" --data "{\"data\" : [\"ws://localhost:6001\"]}" http://localhost:3001/addPeers

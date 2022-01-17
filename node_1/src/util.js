@@ -41,12 +41,12 @@ function setTime (){
 	let time = new Date()
 	let hour = time.getHours();
 	let minutes = time.getMinutes();
-	let seconds = time.getSeconds();
+
 	
 	let year = time.getFullYear();
 	let month = time.getMonth() + 1;
 	let date = time.getDate();
-	let currentTime =year + "/" + month + "/" + date + "\n" + hour + ":" + minutes + ":" + seconds
+	let currentTime =year + "/" + month + "/" + date + "\n" + hour + ":" + minutes
 	return currentTime 
 }
 

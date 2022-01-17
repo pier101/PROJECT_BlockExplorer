@@ -35,7 +35,6 @@ function  getSockets(){
 
 // 특정 노드에 메세지를 던지는 역할
 function write(ws, message){
-    console.log("wswswsws  :   ",ws)
     ws.send(JSON.stringify(message)) 
 }
 const broadcastLatest = () => {
@@ -123,6 +122,8 @@ function responseAllChainMsg(){
 //블럭데이터 받았을떄
 function handleBlockChainResponse(receivedBlocks){
     console.log('블럭데이터 받았습니다.')
+    console.log("=====================")
+    console.log(receivedBlocks)
     
     // 받은 블럭 데이터 값이 없을 떄
     if (receivedBlocks.length === 0) {
