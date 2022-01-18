@@ -20,7 +20,7 @@ const WalletCheck = async(e)=>{
 }
 
 const handleWallet = (e)=>{
-  setInputPort(e.target.value)
+  setinputWallet(e.target.value)
 }
 
 

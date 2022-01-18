@@ -14,7 +14,16 @@ export const Budget = (props) => {
     const getAllBlocks = async()=>{
         await axios.get('http://localhost:3003/blocks').then(res=>{
             console.log(res.data)  
-            console.log(res.data.length)  
+            console.log(res.data.length)
+           function myBlocks(block) {
+             if(block.miner =="04325070d786a196503191eb9830cb762631480302045e589fe7ef7a91ef7b7ec27dac123c75f41f4e57f6cf327dd981ff904a5c3322ffb18f964889d020518743"){
+               return true
+             }
+           }
+           const filterBlock = res.data.find(myBlocks)
+           console.log("-------------------------------")
+           console.log(filterBlock)
+           console.log(filterBlock.length)
             setAllBlocks(res.data.length)
         })
     }

@@ -114,7 +114,15 @@ function initHttpServer(httpport){
             const address = bs58.encode(bytes)
             res.json({result : true ,addr:address})
         }
+    })
 
+    app.post('./createWallet',(req,res)=>{
+        initWallet();
+        if (initWallet()=="기존에 지갑이 있습니다.") {
+            res.send("기존에 지갑이 있습니다.")
+        } else {
+            res.send("지갑을 생성하였습니다.")
+        }
     })
     
     // 작업 종료
@@ -140,11 +148,8 @@ function initHttpServer(httpport){
             1. 공개키 있으면 이미 지갑있다고 처리
             2. 없으면 initWallet 해서 public,address user db에 추가
         */
-        User.findone()
-        if (condition) {
-            
-        }
-        initWallet
+      
+        initWallet()
 
     })
 

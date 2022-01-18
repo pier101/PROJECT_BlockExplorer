@@ -117,29 +117,37 @@ function addBlockDB(newBlock) {
 	})
 }
 
+
 function replaceBlockDB(newBlocks) {
+	const map = new Map();
 	BlockDB.destroy({
 		where: {},
 		truncate: true
 	})
-	console.log("삭제")
-	newBlocks.map(block=>{
+	
+	// 이 부분 복습하기 - 배열 내 중복 객체 제거
+	for(const block of newBlocks){
+		map.set(JSON.stringify(block),block);
+	}
+	const filterBlock = [...map.values()]
+
+	filterBlock.map((block,j)=>{
+		console.log("3001 리플레이스 db",block)
 		let {version, index, previousHash, timestamp, merkleRoot,difficulty,nonce} = block.header
-		BlockDB.create({
-			hash: block.hash,
-			version: version,
-			index: index,
-			previousHash: previousHash,
-			timestamp: timestamp,
-			merkleRoot: merkleRoot,
-			difficulty: difficulty,
-			nonce:nonce,
-			body: block.body[0],
-			miner: block.miner
+			BlockDB.create({
+				hash: block.hash,
+				version: version,
+				index: index,
+				previousHash: previousHash,
+				timestamp: timestamp,
+				merkleRoot: merkleRoot,
+				difficulty: difficulty,
+				nonce:nonce,
+				body: block.body[0],
+				miner: block.miner
+			})
 		})
-		
-	})
-}
+	}
 module.exports = {
 	getCurrentVersion,
 	getCurrentTimestamp,

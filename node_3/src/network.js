@@ -154,6 +154,7 @@ function handleBlockChainResponse(receivedBlocks){
         if (BC.createHash(latestBlockHeld) === latestBlockReceived.header.previousHash) {
             console.log("** (업데이트) 마지막 노드 1개 받기 **")
             if (BC.addBlock(latestBlockReceived)) {
+                console.log("메세지 분기점")
                 broadcast(responseLatestMsg());
             }
         }

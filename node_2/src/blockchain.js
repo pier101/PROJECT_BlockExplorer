@@ -1,7 +1,7 @@
 
 //  [ 블록의 생성, 검증, 합의 알고리즘을 포함 / 프로토콜을 변경하려면 여기서 수정 ]
 // ===========================================================================
-
+require("dotenv").config({ path: "../.env" });
 const cryptojs = require('crypto-js')
 const merkle = require('merkle')
 const random = require('random');
@@ -33,9 +33,10 @@ const {
 
 
 
+
 // 현재 개발 편의상 임의값으로 설정해둔 상태
-const BLOCK_GENERATION_INTERVAL = 30 //블록이 생성되는 간격  
-const DIFFICULTY_ADJUSTMENT_INTERVAL = 3 //  난이도가 조정되는 간격
+// const BLOCK_GENERATION_INTERVAL = 30 //블록이 생성되는 간격  
+// const DIFFICULTY_ADJUSTMENT_INTERVAL = 3 //  난이도가 조정되는 간격
 
 // 블록 구조 설정
 class Block{
@@ -76,7 +77,7 @@ function createGenesisBlock(){  //초기 블록 생성하는 함수
 	const rebody = body[0]
 	const header = new BlockHeader(version,index, previousHash, timestamp, merkleRoot,difficulty,nonce)
 	const blockhash = calculateHash(version, previousHash,index, timestamp, merkleRoot,difficulty,nonce) 
-	const miner = "04b99c23a7166fe2bc0c2b1e019e72ca7f7331aa6902e7e3046009440e8f429b44aa8d088c5ccc162f389f38cffcfff65d196ec83ed8b60d5f867cbba5e7f18a94"
+	const miner = "04325070d786a196503191eb9830cb762631480302045e589fe7ef7a91ef7b7ec27dac123c75f41f4e57f6cf327dd981ff904a5c3322ffb18f964889d020518743"
 	
 	addGenesisDB(blockhash,version, previousHash,index, timestamp, merkleRoot,difficulty,nonce,rebody,miner)
 
@@ -140,7 +141,10 @@ function addBlock(newBlock){
 	let time = setTime()
 	if (isValidNewBlock(newBlock, getLastBlock())) {
 		Blocks.push(newBlock);
-		p2pserver.broadcastLatest()
+
+	
+
+		console.log("결과일로 오나..?",p2pserver.broadcastLatest())
 		console.log('블록 추가')
 		
 		addBlockDB(newBlock)
@@ -238,16 +242,17 @@ function isValidNewBlock(newBlock, previousBlock){
 	
 	// 체인 교체 함수
 	const replaceChain = (newBlocks) => {
-		const p2pserver = require('./network')
+		// const p2pserver = require('./network')
 		let time = setTime()
 		if (isValidChain(newBlocks)){
 			if ((newBlocks.length > Blocks.length) 
 			||(newBlocks.length === Blocks.length) && random.boolean()) {
 				Blocks = newBlocks;
-				p2pserver.broadcastLatest()
+				console.log("3001 메세지 분기점 - replace chain")
+				// p2pserver.broadcastLatest()
 				replaceBlockDB(newBlocks)
 			}
-			return replaceSuccess(newBlocks[newBlocks.length - 1],time)
+			return replaceSuccess(newBlocks,time)
 		} 
 		else {
 			return replaceFail(newBlocks,time)
@@ -276,7 +281,7 @@ function isValidNewBlock(newBlock, previousBlock){
 	
 	function getDifficulty(blocks){
 		const lastBlock = blocks[blocks.length - 1];
-		if(lastBlock.header.index !== 0 && (lastBlock.header.index % DIFFICULTY_ADJUSTMENT_INTERVAL === 0)){
+		if(lastBlock.header.index !== 0 && (lastBlock.header.index % process.env.DIFFICULTY_ADJUSTMENT_INTERVAL === 0)){
 			console.log("여기로 들오자")
 			return	getAdjustDifficulty(lastBlock,blocks)
 		} else{
@@ -286,12 +291,12 @@ function isValidNewBlock(newBlock, previousBlock){
 	
 	// 난이도 조정 함수
 	function getAdjustDifficulty(lastBlock,blocks){
-		const prevAdjustmentBlock = blocks[blocks.length - DIFFICULTY_ADJUSTMENT_INTERVAL];
+		const prevAdjustmentBlock = blocks[blocks.length - process.env.DIFFICULTY_ADJUSTMENT_INTERVAL];
 		//실제 걸린 시간
 		const elapsedTime = lastBlock.header.timestamp - prevAdjustmentBlock.header.timestamp
 		console.log("걸린시간 : ",elapsedTime)
 		//기대한시간
-		const expectedTime = BLOCK_GENERATION_INTERVAL	*DIFFICULTY_ADJUSTMENT_INTERVAL;
+		const expectedTime = process.env.BLOCK_GENERATION_INTERVAL	* process.env.DIFFICULTY_ADJUSTMENT_INTERVAL;
 		console.log("기대시간 : ",expectedTime)
 		if (expectedTime / 2 > elapsedTime) {	
 			console.log("난이도 upupup")
@@ -317,7 +322,8 @@ function isValidNewBlock(newBlock, previousBlock){
 		replaceChain,
 		hashMatchesDifficulty,
 		isValidBlockStructure,
+		createGenesisBlock,
 		Block,
 		BlockHeader,
-		Blocks
+		Blocks,
 	}

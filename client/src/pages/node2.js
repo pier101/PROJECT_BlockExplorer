@@ -13,21 +13,39 @@ import {useState} from 'react'
 const Node2 = () => {
   
   
+  
   const [blockLength,setBlockLength] = useState(0)
+  const [blockDifficulty,setBlockDifficulty] = useState(0)
   const [block,setBlock] = useState()
   const [miningResult,setMiningResult] = useState([])
+  const [timestamp,setTimestamp] = useState([])
+  const [timeInterver,setTimeInterver] = useState()
+  const [blockInterver,setBlockInterver] = useState()
+
   
   const handleBlockLength = (data)=>{
+    console.log(">><<<>><><", data[0][data[0].length-1].header.timestamp)  
     setBlockLength(data[0].length)
+    setBlockDifficulty(data[0][data[0].length-1].header.difficulty)
     setBlock(data[0])
     console.log("000000000",...miningResult)
     setMiningResult([data[1],...miningResult])
+    setTimeInterver(data[2])
+    setBlockInterver(data[3])
+    setTimestamp([data[0][data[0].length-1].header.timestamp,...timestamp])
   }
-  
+  const startPoint = (data) =>{
+    console.log("startstartstart!!!",data)
+    setStart(data)
+  }
+  const finishPoint = (data) =>{
+    console.log("finish!!!!!!",data)
+    setFinish(data)
+  }
   
   return (
 
-     <DashboardLayout>
+     <DashboardLayout >
     <Head>
       <title>
         Dashboard | Material Kit
@@ -40,10 +58,11 @@ const Node2 = () => {
         py: 8
       }}
       >
-      <Container maxWidth={false}>
+      <Container maxWidth={false} >
         <Grid
           container
           spacing={3}
+          
           >
           <Grid
             item
@@ -52,20 +71,10 @@ const Node2 = () => {
             sm={6}
             xs={12}
             >
-            <TotalProfit style={{backgroundColor:"#7070E3"}} sx={{ height: '85%' }} onCreate={handleBlockLength}/>
+            <TotalProfit style={{backgroundColor:"#7070E3"}} sx={{ height: '95%' }} onStart={startPoint} onFinish={finishPoint} onCreate={handleBlockLength}/>
             {/* onCreate={handleBlockLength} */}
           </Grid>
-          {/* <Grid
-            item
-            xl={3}
-            lg={3}
-            sm={6}
-            xs={12}
-            >
-          
-            <TotalProfit2 style={{backgroundColor:"#7070E3"}} sx={{ height: '85%' }} onCreate={handleBlockLength}/> */}
-            {/* onCreate={handleBlockLength} */}
-          {/* </Grid> */}
+
           <Grid
             item
             xl={3}
@@ -73,7 +82,7 @@ const Node2 = () => {
             sm={6}
             xs={12}
             >
-            <TasksProgress sx={{ height: '85%' }} style={{backgroundColor:"#5A78F0"}}/>  
+            <TasksProgress sx={{ height: '95%' }} style={{backgroundColor:"#5A78F0"}}/>  
           </Grid>
           <Grid
             item
@@ -82,7 +91,7 @@ const Node2 = () => {
             xl={3}
             xs={12}
             >
-            <Budget blocks={blockLength} sx={{ height: '85%' }} style={{backgroundColor:"#25B0E8"}}/>
+            <Budget blocks={blockLength} sx={{ height: '95%' }} style={{backgroundColor:"#25B0E8"}}/>
             {/* blocks={blockLength} */}
           </Grid>
           <Grid
@@ -92,7 +101,7 @@ const Node2 = () => {
             sm={6}
             xs={12}
             >
-            <TotalCustomers sx={{ height: '85%' }} style={{backgroundColor:"#536D8B"}}/>
+            <TotalCustomers sx={{ height: '95%' }} style={{backgroundColor:"#536D8B"}}/>
           </Grid>
           <Grid
             item
@@ -101,7 +110,7 @@ const Node2 = () => {
             xl={9}
             xs={12}
             >
-            <Sales resultMsg={miningResult}/>
+            <Sales resultmsg={miningResult}/>
           </Grid>
           <Grid
             item
@@ -110,7 +119,12 @@ const Node2 = () => {
             xl={3}
             xs={12}
             >
-            <TrafficByDevice sx={{ height: '100%' }} />
+            <TrafficByDevice 
+            interver1={timeInterver}
+            interver2={blockInterver}
+            miningtime={timestamp}
+            currentdifficulty={blockDifficulty}
+             sx={{ height: '100%' }}/>
           </Grid>
           <Grid
             item
@@ -133,6 +147,5 @@ const Node2 = () => {
 //     {page}
 //   </DashboardLayout>
 // );
-
 
 export default Node2;

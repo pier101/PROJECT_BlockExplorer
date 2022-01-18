@@ -12,7 +12,8 @@ const privateKeyFile = privateKeyLocation + "/private_key.txt";
 function initWallet(){
     if(fs.existsSync(privateKeyFile)){
         console.log("기존 지갑 private key 경로 : " + privateKeyFile);
-        return;
+        const walletMsg= "기존에 지갑이 있습니다."
+        return walletMsg;
     }
     
     if (!fs.existsSync("wallet/")) {
@@ -24,6 +25,8 @@ function initWallet(){
     const newPrivateKey = generatePrivateKey();
     fs.writeFileSync(privateKeyFile, newPrivateKey);
     console.log("새로운 지갑 생성 private key 경로 : " + privateKeyFile)
+    const walletMsg1= "새로운 지갑을 생성하였습니다."
+    return walletMsg1
 }
 
 function generatePrivateKey(){

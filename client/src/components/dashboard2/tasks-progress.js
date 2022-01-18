@@ -10,7 +10,7 @@ export const TasksProgress = (props) => {
 
 const WalletCheck = async(e)=>{
   e.preventDefault();
-    await axios.post('http://localhost:3001/wallet',{data: inputWallet}).then(res=>{
+    await axios.post('http://localhost:3002/wallet',{data: inputWallet}).then(res=>{
         console.log("월렛요청 결과",res.data.result)
         if  (res.data.result){
           setIsWallet(true)
@@ -20,7 +20,7 @@ const WalletCheck = async(e)=>{
 }
 
 const handleWallet = (e)=>{
-  setInputPort(e.target.value)
+  setinputWallet(e.target.value)
 }
 
 

@@ -15,6 +15,24 @@ export const Budget = (props) => {
         await axios.get('http://localhost:3002/blocks').then(res=>{
             console.log(res.data)  
             console.log(res.data.length)  
+
+
+            // const filterBlock = res.data.find(myblock=>myblock.miner==="046021bb6120e7f12e7d7005db65ee29cf652196559cda2656ee85c6f117b30a33c556279d49403e48a7a903342a97fcccde136b1afff7dc9e244715464eb5e59b")
+            // let mymy = [];
+            // res.data.map(block=>{
+            //   mymy.push(
+            //     block.find(myblock=>myblock.miner==="046021bb6120e7f12e7d7005db65ee29cf652196559cda2656ee85c6f117b30a33c556279d49403e48a7a903342a97fcccde136b1afff7dc9e244715464eb5e59b")
+            //   )
+            // })
+            // function myBlocks(block) {
+            //   if(block.miner ==""){
+            //     return true
+            //   }
+            // }
+            // const filterBlock = res.data.find(myBlocks)
+            console.log("-------------------------------")
+            // console.log(filterBlock)
+            // console.log(filterBlock.length)
             setAllBlocks(res.data.length)
         })
     }
@@ -42,6 +60,7 @@ export const Budget = (props) => {
             gutterBottom
             variant="h5" 
             fontWeight={500}
+            sx={{marginTop:2,fontSize:28}}
           >
             Block
             <span style={{marginLeft:20}}>    {allBlocks}</span>
@@ -51,7 +70,7 @@ export const Budget = (props) => {
           >
           </Typography>
           </Typography>
-          <Typography
+          {/* <Typography
             color="#fff"
             gutterBottom
             variant="h5"
@@ -59,7 +78,7 @@ export const Budget = (props) => {
           >
             My Blocks
           <span style={{marginLeft:20}}>{allBlocks}</span>
-          </Typography>
+          </Typography> */}
           <Typography
             color="#fff"
             variant="h5"

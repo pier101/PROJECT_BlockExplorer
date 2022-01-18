@@ -49,7 +49,6 @@ export const LatestOrders = (props) => {
   }, [props.blocks])
 
   useEffect(() => {
-
     const nodeCheck = async()=>{
           await axios.get('http://localhost:3001/miner').then(res=>{
           console.log(res.data)  
@@ -134,7 +133,7 @@ export const LatestOrders = (props) => {
                     <SeverityPill
                       color={(block.miner == node_1 && 'primary')
                       || (block.miner == node_2 && 'secondary')
-                      || (block.miner  == node_3 && 'success')
+                      || (block.miner  == node_3 && 'warning')
                       || 'warning'}
                     >
               

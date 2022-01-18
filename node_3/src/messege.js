@@ -100,7 +100,7 @@
     // 9
     const replaceSuccess = (block,time)=>{
         return {
-            blockIndex: block.header.index,
+            blockIndex: block[block.length-1].header.index,
             type : "체인 교체",
             result : "성공",
             msg : "신뢰도가 높은 블록으로 교체 되었습니다.",
@@ -110,7 +110,7 @@
     // 10
     const replaceFail = (block,time)=>{
         return {
-            blockIndex: block.header.index,
+            blockIndex: block[block.length-1].header.index,
             type : "체인 교체",
             result : "실패",
             msg : "교체할 체인이 유효하지 않음",

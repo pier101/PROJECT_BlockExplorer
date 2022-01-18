@@ -3,14 +3,17 @@ import axios from 'axios'
 import { format } from 'date-fns';
 import { v4 as uuid } from 'uuid';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import ReplayIcon from '@mui/icons-material/Replay';
 import {
   Box,
   Button,
   Card,
   CardHeader,
+  Grid,
   Table,
   TableBody,
   TableCell,
+  Avartar,
   TableHead,
   TableRow,
   TableSortLabel,
@@ -27,6 +30,12 @@ export const LatestOrders = (props) => {
   const [node_2,setNode_2] = useState("")
   const [node_3,setNode_3] = useState("")
 
+  const getBlockInfo = async()=>{
+      await axios.get('http://localhost:3002/blocks').then(res=>{
+          console.log("마이너 : ", res.data.miner)  
+          setBlockInfo(res.data)
+      }).catch(()=>{console.log(" 서버가 열려있지 않습니다.")})
+  }
 
   useEffect(() => {
     const getBlockInfo = async()=>{
@@ -60,7 +69,13 @@ export const LatestOrders = (props) => {
 
   return (
     <Card {...props}>
-      <CardHeader title="실시간 블록현황" />
+      <Grid sx={{display:"flex"}}>
+          <CardHeader title="실시간 블록현황" style={{color:"#333D4B"}}/>
+          <Button type='submit' onClick={getBlockInfo} sx={{margin:0,padding:0}}>
+            <ReplayIcon sx={{width:35,color:"#333D4B"}}/>
+          </Button>
+
+      </Grid>
       <PerfectScrollbar>
         <Box sx={{ minWidth: 500 }}>
           <Table>
@@ -119,7 +134,7 @@ export const LatestOrders = (props) => {
                     <SeverityPill
                       color={(block.miner == node_1 && 'primary')
                       || (block.miner == node_2 && 'secondary')
-                      || (block.miner  == node_3 && 'success')
+                      || (block.miner  == node_3 && 'warning')
                       || 'warning'}
                     >
               

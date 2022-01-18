@@ -1,121 +1,91 @@
-import { Doughnut } from 'react-chartjs-2';
-import { Box, Card, CardContent, CardHeader, Divider, Typography, useTheme } from '@mui/material';
-import LaptopMacIcon from '@mui/icons-material/LaptopMac';
-import PhoneIcon from '@mui/icons-material/Phone';
-import TabletIcon from '@mui/icons-material/Tablet';
+import {Box, Grid, Card, CardContent, CardHeader, Divider, Typography, useTheme } from '@mui/material';
+import { useEffect, useState } from 'react';
+import Loding from '../Loding'
 
 export const TrafficByDevice = (props) => {
-  const theme = useTheme();
+  // \const [isLoading,setIsLoading] = useState(false)
+  // const [temp,setTemp] = useState(0)
+  // const [numarr,setNumArr] = useState([])
+  // const [returnTime,setReturnTime] = useState()
 
-  const data = {
-    datasets: [
-      {
-        data: [63, 15, 22],
-        backgroundColor: ['#3F51B5', '#e53935', '#FB8C00'],
-        borderWidth: 8,
-        borderColor: '#FFFFFF',
-        hoverBorderColor: '#FFFFFF'
-      }
-    ],
-    labels: ['노드1', '노드2', '노드3']
-  };
+  const bits = props.currentdifficulty
+  
+  const timeInterver = props.interver1
+  const blockInterver = props.interver2
+  
+  const miningTime = props.miningtime
+  const prevTime = miningTime[1]
+  const nowTime = miningTime[0]
+ 
+  
+  // useEffect(async() => {
+  //   setTemp(temp+1)
+  //   setNumArr([...numarr,nowTime-prevTime,])
+  //   console.log("템프템프",temp)
+  //   console.log(numarr)
+  //   let sum = 0
+  //   if (temp==6){
+  //     const timearr = numarr[temp-2,temp-1]
+  //     console.log("======타임 arr ===========",timearr)
+  //     for (let i = 0; i < timearr.length; i++) {
+  //       if (timearr[0]) {
+  //         sum +=0
+  //         continue
+  //       }
+  //       sum += timearr[i];
+  //     }
+  //     console.log(sum)
+  //     setReturnTime(sum)
+  //   }
+  // }, [prevTime])
 
-  const options = {
-    animation: false,
-    cutoutPercentage: 80,
-    layout: { padding: 0 },
-    legend: {
-      display: false
-    },
-    maintainAspectRatio: false,
-    responsive: true,
-    tooltips: {
-      backgroundColor: theme.palette.background.paper,
-      bodyFontColor: theme.palette.text.secondary,
-      borderColor: theme.palette.divider,
-      borderWidth: 1,
-      enabled: true,
-      footerFontColor: theme.palette.text.secondary,
-      intersect: false,
-      mode: 'index',
-      titleFontColor: theme.palette.text.primary
-    }
-  };
-
-  const devices = [
-    {
-      title: '노드1',
-      value: 63,
-      icon: LaptopMacIcon,
-      color: '#3F51B5'
-    },
-    {
-      title: '노드2',
-      value: 15,
-      icon: TabletIcon,
-      color: '#E53935'
-    },
-    {
-      title: '노드3',
-      value: 23,
-      icon: PhoneIcon,
-      color: '#FB8C00'
-    }
-  ];
 
   return (
-    <Card {...props}>
-      <CardHeader title="노드별 채굴양" />
+    <Card {...props} sx={{backgroundColor:"#0B2840"}}>
+      <CardHeader title="노드별 채굴양" sx={{color:"#fff"}}/>
       <Divider />
       <CardContent>
-        <Box
-          sx={{
-            height: 300,
-            position: 'relative'
-          }}
-        >
-          <Doughnut
-            data={data}
-            options={options}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            pt: 2
-          }}
-        >
-          {devices.map(({
-            color,
-            icon: Icon,
-            title,
-            value
-          }) => (
-            <Box
-              key={title}
-              sx={{
-                p: 1,
-                textAlign: 'center'
-              }}
-            >
-              <Icon color="action" />
-              <Typography
-                color="textPrimary"
-                variant="body1"
-              >
-                {title}
-              </Typography>
-              <Typography
-                style={{ color }}
-                variant="h4"
-              >
-                {value}
-                %
-              </Typography>
+        <Grid sx={{display: 'flex',flexFlow:'column',alignItems:'center'}}>
+            <Box sx={{color:"#fff",marginTop:4,fontSize:22,display: 'flex',justifyContent:'space-around'}}>
+                <Box sx={{marginRight:19}}><b>현재 난이도 </b></Box>
+                <Box><b> {bits}</b></Box>
             </Box>
-          ))}
-        </Box>
+            <Box sx={{marginTop:5,color:"#fff",fontSize:22,display: 'flex',justifyContent:'space-around'}}>
+              <Box sx={{marginRight:11}}>
+                <b>예상 시간</b>
+              </Box >
+              <Box>
+                <b>{timeInterver*blockInterver}</b>
+              </Box>
+              <Box>
+                <span>(sec)</span>
+              </Box>
+            </Box>
+            <Box sx={{marginTop:4,color:"#fff",fontSize:22,display: 'flex',justifyContent:'space-around'}}>
+              <Box sx={{marginRight:6}}>
+                <b>난이도 변경 주기</b>
+              </Box>
+              <Box>
+                <b>{blockInterver}</b>
+              </Box>
+              <Box>
+                <span>(block)</span>
+              </Box>
+            </Box>
+            <Divider sx={{color:"#fff",marginTop:5}}/>
+            <Box sx={{marginTop:10  ,marginBottom:5,color:"#fff",fontSize:22,display: 'flex',justifyContent:'space-around'}}>
+              <Box sx={{marginRight:12}}>
+                <b>걸린 시간</b>
+              </Box>
+              <Box>
+                <b>{(nowTime-prevTime)}</b>
+              </Box>
+              <Box>
+                <span>(sec) </span>
+              </Box>  
+            </Box>
+        </Grid>
+        
       </CardContent>
     </Card>
   );

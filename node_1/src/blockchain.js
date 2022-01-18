@@ -77,7 +77,7 @@ function createGenesisBlock(){  //초기 블록 생성하는 함수
 	const rebody = body[0]
 	const header = new BlockHeader(version,index, previousHash, timestamp, merkleRoot,difficulty,nonce)
 	const blockhash = calculateHash(version, previousHash,index, timestamp, merkleRoot,difficulty,nonce) 
-	const miner = "04b99c23a7166fe2bc0c2b1e019e72ca7f7331aa6902e7e3046009440e8f429b44aa8d088c5ccc162f389f38cffcfff65d196ec83ed8b60d5f867cbba5e7f18a94"
+	const miner = "04325070d786a196503191eb9830cb762631480302045e589fe7ef7a91ef7b7ec27dac123c75f41f4e57f6cf327dd981ff904a5c3322ffb18f964889d020518743"
 	
 	addGenesisDB(blockhash,version, previousHash,index, timestamp, merkleRoot,difficulty,nonce,rebody,miner)
 
@@ -141,7 +141,8 @@ function addBlock(newBlock){
 	let time = setTime()
 	if (isValidNewBlock(newBlock, getLastBlock())) {
 		Blocks.push(newBlock);
-		p2pserver.broadcastLatest()
+
+		console.log("=========== 메 세 지 1 ===============")
 
 		console.log("결과일로 오나..?",p2pserver.broadcastLatest())
 		console.log('블록 추가')
@@ -241,13 +242,14 @@ function isValidNewBlock(newBlock, previousBlock){
 	
 	// 체인 교체 함수
 	const replaceChain = (newBlocks) => {
-		const p2pserver = require('./network')
+		// const p2pserver = require('./network')
 		let time = setTime()
 		if (isValidChain(newBlocks)){
 			if ((newBlocks.length > Blocks.length) 
 			||(newBlocks.length === Blocks.length) && random.boolean()) {
 				Blocks = newBlocks;
-				p2pserver.broadcastLatest()
+				console.log("3001 메세지 분기점 - replace chain")
+				// p2pserver.broadcastLatest()
 				replaceBlockDB(newBlocks)
 			}
 			return replaceSuccess(newBlocks,time)
