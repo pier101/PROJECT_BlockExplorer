@@ -1,12 +1,10 @@
-import { Bar } from 'react-chartjs-2';
-import { Box, Button, Card, CardContent, CardHeader, Divider, useTheme,Table,
+
+import { Box, Card, CardContent, CardHeader, Divider,Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  TableSortLabel, } from '@mui/material';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+} from '@mui/material';
 
 export const Sales = (props) => {
   const message = props.resultmsg
@@ -25,10 +23,6 @@ export const Sales = (props) => {
             position: 'relative'
           }}
         >
-          {/* <Bar
-            data={data}
-            options={options}
-          /> */}
           <Table>
             <TableHead>
                 <TableRow>
@@ -75,22 +69,6 @@ export const Sales = (props) => {
           </Table>
         </Box>
       </CardContent>
-      {/* <Divider />
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          p: 2
-        }}
-      >
-        <Button
-          color="primary"
-          endIcon={<ArrowRightIcon fontSize="small" />}
-          size="small"
-        >
-          초단위
-        </Button>
-      </Box> */}
     </Card>
   );
 };

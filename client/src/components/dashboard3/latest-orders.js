@@ -1,7 +1,5 @@
 import { useState,useEffect } from 'react';
 import axios from 'axios'
-import { format } from 'date-fns';
-import { v4 as uuid } from 'uuid';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import ReplayIcon from '@mui/icons-material/Replay';
 import {
@@ -13,7 +11,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  Avartar,
   TableHead,
   TableRow,
   TableSortLabel,
@@ -49,15 +46,15 @@ export const LatestOrders = (props) => {
   }, [props.blocks])
 
   useEffect(() => {
-
     const nodeCheck = async()=>{
           await axios.get('http://localhost:3001/miner').then(res=>{
           console.log(res.data)  
-              setNode_1(res.data)
+              setNode_1(res.data)   
           }).catch(()=>{console.log(" 서버가 열려있지 않습니다.")})
           await axios.get('http://localhost:3002/miner').then(res=>{
               console.log(res.data)  
               setNode_2(res.data)
+              
           }).catch(()=>console.log("요청하는 서버가 열려있지 않습니다."))
           await axios.get('http://localhost:3003/miner').then(res=>{
               console.log(res.data)  
@@ -81,33 +78,33 @@ export const LatestOrders = (props) => {
           <Table>
             <TableHead>
               <TableRow>
+                  <TableCell>
+                    Index
+                  </TableCell>
                 <TableCell>
-                  Hash
+                  Node
                 </TableCell>
                 <TableCell>
-                  Difficulty
+                 <b>Hash</b> / PreviousHash
                 </TableCell>
                 <TableCell>
                   Timestamp
-                </TableCell>
-                <TableCell>
-                  Node
                 </TableCell>
                 <TableCell sortDirection="desc">
                   <Tooltip
                     enterDelay={300}
                     title="Sort"
-                  >
+                    >
                     <TableSortLabel
                       active
                       direction="desc"
-                    >
+                      >
                       MerkleRoot
                     </TableSortLabel>
                   </Tooltip>
                 </TableCell>
                 <TableCell>
-                  Size
+                  Difficulty
                 </TableCell>
                 <TableCell>
                   Nonce
@@ -120,16 +117,9 @@ export const LatestOrders = (props) => {
                   hover
                   key={block.index}
                 >
-                  <TableCell style={{fontSize:13}}>
-                    {block.hash}
-                  </TableCell>
-                  <TableCell>
-                    {block.difficulty}
-                  </TableCell>
-                  <TableCell style={{fontSize:13}}>
-                    {format(block.timestamp, 'dd/MM/yyyy')}
-                    {/* {new Date(block.header.timestamp).getTime()} */}
-                  </TableCell>
+                    <TableCell>
+                      {block.index}
+                    </TableCell>
                   <TableCell>
                     <SeverityPill
                       color={(block.miner == node_1 && 'primary')
@@ -142,10 +132,18 @@ export const LatestOrders = (props) => {
                     </SeverityPill>
                   </TableCell>
                   <TableCell style={{fontSize:13}}>
+                    <b>{block.hash}</b> <br />
+                    <span>{block.previousHash}</span>
+                  </TableCell>
+                  <TableCell style={{fontSize:13}}>
+                    {block.timestamp}
+                    {/* {new Date(block.header.timestamp).getTime()} */}
+                  </TableCell>
+                  <TableCell style={{fontSize:13}}>
                     {block.merkleRoot}
                   </TableCell>
                   <TableCell>
-                    {/* {block.header.size} */}
+                    {block.difficulty}
                   </TableCell>
                   <TableCell>
                     {block.nonce}

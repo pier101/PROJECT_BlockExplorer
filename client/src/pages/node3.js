@@ -12,7 +12,6 @@ import {useState} from 'react'
 
 const Node3 = () => {
   
-
   
   const [blockLength,setBlockLength] = useState(0)
   const [blockDifficulty,setBlockDifficulty] = useState(0)
@@ -21,6 +20,7 @@ const Node3 = () => {
   const [timestamp,setTimestamp] = useState([])
   const [timeInterver,setTimeInterver] = useState()
   const [blockInterver,setBlockInterver] = useState()
+  const [walletAddress,setWalletAddress] = useState()
 
   
   const handleBlockLength = (data)=>{
@@ -34,10 +34,12 @@ const Node3 = () => {
     setBlockInterver(data[3])
     setTimestamp([data[0][data[0].length-1].header.timestamp,...timestamp])
   }
+
   const startPoint = (data) =>{
     console.log("startstartstart!!!",data)
     setStart(data)
   }
+
   const finishPoint = (data) =>{
     console.log("finish!!!!!!",data)
     setFinish(data)
@@ -82,7 +84,7 @@ const Node3 = () => {
             sm={6}
             xs={12}
             >
-            <TasksProgress sx={{ height: '95%' }} style={{backgroundColor:"#5A78F0"}}/>  
+            <TasksProgress  sx={{ height: '95%' }} style={{backgroundColor:"#5A78F0"}}/>  
           </Grid>
           <Grid
             item
@@ -134,7 +136,7 @@ const Node3 = () => {
             xs={12}
             >
             <LatestOrders blocks={block}/>
-            {/* blocks={block} */}
+
           </Grid>
         </Grid>
       </Container>
@@ -142,11 +144,6 @@ const Node3 = () => {
 
     </DashboardLayout>
 );}
-// Dashboard.getLayout = (page) => (
-//   <DashboardLayout>
-//     {page}
-//   </DashboardLayout>
-// );
 
 
 export default Node3;

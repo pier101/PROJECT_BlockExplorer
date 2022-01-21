@@ -8,9 +8,6 @@ export const TotalProfit = (props) =>{
   
   const minning = async()=>{
 
-    // props.onCreate(startTime)
-    // props.onCreate(finishTime)
-    
     await axios.post('http://localhost:3002/mineBlock',{data:transaction}).then(res=>{
       console.log("받은 데이터",res.data)
       props.onCreate(res.data)

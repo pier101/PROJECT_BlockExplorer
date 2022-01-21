@@ -1,32 +1,24 @@
-import { Avatar, Box, Card, CardContent, Grid, Typography } from '@mui/material';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import MoneyIcon from '@mui/icons-material/Money';
+import {Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import axios from 'axios';
 import { useState,useEffect } from 'react';
 
 
 export const Budget = (props) => {
- 
   const [allBlocks,setAllBlocks] = useState(0)
+  const [myBlocks,setMyBlock] = useState("")
+  const [address,setAddress] = useState()
 
   useEffect(() => {
     const getAllBlocks = async()=>{
         await axios.get('http://localhost:3003/blocks').then(res=>{
             console.log(res.data)  
-            console.log(res.data.length)
-           function myBlocks(block) {
-             if(block.miner =="04325070d786a196503191eb9830cb762631480302045e589fe7ef7a91ef7b7ec27dac123c75f41f4e57f6cf327dd981ff904a5c3322ffb18f964889d020518743"){
-               return true
-             }
-           }
-           const filterBlock = res.data.find(myBlocks)
-           console.log("-------------------------------")
-           console.log(filterBlock)
-           console.log(filterBlock.length)
+            console.log(res.data.length)  
             setAllBlocks(res.data.length)
-        })
-    }
+            setMyBlock(res.data)
+        }).catch(err=>{console.error(err)})
+
+      }
 
     getAllBlocks()
   }, [props.blocks])
@@ -53,21 +45,12 @@ export const Budget = (props) => {
             fontWeight={500}
           >
             Block
-            <span style={{marginLeft:20}}>    {allBlocks}</span>
+            <Box style={{fontSize:28,marginLeft:20,marginTop:10}}><b>{allBlocks}</b></Box>
           <Typography
             color="#fff"
             variant="h5"
           >
           </Typography>
-          </Typography>
-          <Typography
-            color="#fff"
-            gutterBottom
-            variant="h5"
-            fontWeight={500}
-          >
-            My Blocks
-          <span style={{marginLeft:20}}>{allBlocks}</span>
           </Typography>
           <Typography
             color="#fff"
@@ -78,30 +61,6 @@ export const Budget = (props) => {
         <Grid item>
         </Grid>
       </Grid>
-      {/* <Box
-        sx={{
-          pt: 2,
-          display: 'flex',
-          alignItems: 'center'
-        }}
-      >
-        <ViewColumnIcon color="error" />
-        <Typography
-          color="error"
-          sx={{
-            mr: 2
-          }}
-          variant="body2"
-        >
-          12%
-        </Typography>
-        <Typography
-          color="textSecondary"
-          variant="caption"
-        >
-          Since last month
-        </Typography>
-      </Box> */}
     </CardContent>
   </Card>
 );

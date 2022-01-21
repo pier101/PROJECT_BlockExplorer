@@ -117,7 +117,6 @@ function addBlockDB(newBlock) {
 	})
 }
 
-
 function replaceBlockDB(newBlocks) {
 	const map = new Map();
 	BlockDB.destroy({

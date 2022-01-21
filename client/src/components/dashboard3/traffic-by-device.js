@@ -3,10 +3,6 @@ import { useEffect, useState } from 'react';
 import Loding from '../Loding'
 
 export const TrafficByDevice = (props) => {
-  // \const [isLoading,setIsLoading] = useState(false)
-  // const [temp,setTemp] = useState(0)
-  // const [numarr,setNumArr] = useState([])
-  // const [returnTime,setReturnTime] = useState()
 
   const bits = props.currentdifficulty
   
@@ -17,29 +13,6 @@ export const TrafficByDevice = (props) => {
   const prevTime = miningTime[1]
   const nowTime = miningTime[0]
  
-  
-  // useEffect(async() => {
-  //   setTemp(temp+1)
-  //   setNumArr([...numarr,nowTime-prevTime,])
-  //   console.log("템프템프",temp)
-  //   console.log(numarr)
-  //   let sum = 0
-  //   if (temp==6){
-  //     const timearr = numarr[temp-2,temp-1]
-  //     console.log("======타임 arr ===========",timearr)
-  //     for (let i = 0; i < timearr.length; i++) {
-  //       if (timearr[0]) {
-  //         sum +=0
-  //         continue
-  //       }
-  //       sum += timearr[i];
-  //     }
-  //     console.log(sum)
-  //     setReturnTime(sum)
-  //   }
-  // }, [prevTime])
-
-
   return (
     <Card {...props} sx={{backgroundColor:"#0B2840"}}>
       <CardHeader title="노드별 채굴양" sx={{color:"#fff"}}/>

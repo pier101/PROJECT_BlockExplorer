@@ -22,6 +22,7 @@ const Dashboard = () => {
 
   
   const handleBlockLength = (data)=>{
+    console.log("데이터좀 보자",data)
     console.log(">><<<>><><", data[0][data[0].length-1].header.timestamp)  
     setBlockLength(data[0].length)
     setBlockDifficulty(data[0][data[0].length-1].header.difficulty)
@@ -32,10 +33,12 @@ const Dashboard = () => {
     setBlockInterver(data[3])
     setTimestamp([data[0][data[0].length-1].header.timestamp,...timestamp])
   }
+
   const startPoint = (data) =>{
     console.log("startstartstart!!!",data)
     setStart(data)
   }
+
   const finishPoint = (data) =>{
     console.log("finish!!!!!!",data)
     setFinish(data)
@@ -80,7 +83,7 @@ const Dashboard = () => {
             sm={6}
             xs={12}
             >
-            <TasksProgress sx={{ height: '95%' }} style={{backgroundColor:"#5A78F0"}}/>  
+            <TasksProgress  sx={{ height: '95%' }} style={{backgroundColor:"#5A78F0"}}/>  
           </Grid>
           <Grid
             item
@@ -132,7 +135,7 @@ const Dashboard = () => {
             xs={12}
             >
             <LatestOrders blocks={block}/>
-            {/* blocks={block} */}
+
           </Grid>
         </Grid>
       </Container>
@@ -140,11 +143,6 @@ const Dashboard = () => {
 
     </DashboardLayout>
 );}
-// Dashboard.getLayout = (page) => (
-//   <DashboardLayout>
-//     {page}
-//   </DashboardLayout>
-// );
 
 
 export default Dashboard;

@@ -28,11 +28,6 @@ const items = [
     title: "node3",
   },
   {
-    href: "/customers",
-    icon: <UsersIcon fontSize="small" />,
-    title: "블록현황",
-  },
-  {
     href: "/404",
     icon: <XCircleIcon fontSize="small" />,
     title: "Error",

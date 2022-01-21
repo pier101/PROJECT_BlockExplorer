@@ -80,63 +80,7 @@ export const TotalCustomers = (props) => {
             })}
           </Box>
           </Typography>
-
       </Grid>
-      {/* <Grid
-        container
-        spacing={3}
-        sx={{ justifyContent: 'space-between' }}
-      >
-        <Grid item>
-          <Typography
-            color="textSecondary"
-            gutterBottom
-            variant="overline"
-          >
-            총 노드수
-          </Typography>
-          <Typography
-            color="textPrimary"
-            variant="h4"
-          >
-            {nodeChech}노드
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Avatar
-            sx={{
-              backgroundColor: 'success.main',
-              height: 56,
-              width: 56
-            }}
-          >
-            <PeopleIcon />
-          </Avatar>
-        </Grid>
-      </Grid> */}
-      {/* <Box
-        sx={{
-          alignItems: 'center',
-          display: 'flex',
-          pt: 2
-        }}
-      >
-        <ArrowUpwardIcon color="success" />
-        <Typography
-          variant="body2"
-          sx={{
-            mr: 1
-          }}
-        >
-          25%
-        </Typography>
-        <Typography
-          color="textSecondary"
-          variant="caption"
-        >
-          Since last month
-        </Typography>
-      </Box> */}
     </CardContent>
   </Card>
 );

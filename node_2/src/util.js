@@ -117,14 +117,12 @@ function addBlockDB(newBlock) {
 	})
 }
 
-
 function replaceBlockDB(newBlocks) {
 	const map = new Map();
 	BlockDB.destroy({
 		where: {},
 		truncate: true
 	})
-
 	
 	// 이 부분 복습하기 - 배열 내 중복 객체 제거
 	for(const block of newBlocks){
@@ -149,34 +147,7 @@ function replaceBlockDB(newBlocks) {
 			})
 		})
 	}
-// function replaceBlockDB(newBlocks) {
-// 	BlockDB.destroy({
-// 		where: {},
-// 		truncate: true
-// 	})
-// 	console.log("삭제")
-// 	newBlocks.map((block,j)=>{
-
-// 		if (j%2 ==0) {
-// 			console.log("3001 리플레이스 db",block)
-	
-// 			let {version, index, previousHash, timestamp, merkleRoot,difficulty,nonce} = block.header
-// 			BlockDB.create({
-// 				hash: block.hash,
-// 				version: version,
-// 				index: index,
-// 				previousHash: previousHash,
-// 				timestamp: timestamp,
-// 				merkleRoot: merkleRoot,
-// 				difficulty: difficulty,
-// 				nonce:nonce,
-// 				body: block.body[0],
-// 				miner: block.miner
-// 			})
-// 		}
-// 	})
-// }
- module.exports = {
+module.exports = {
 	getCurrentVersion,
 	getCurrentTimestamp,
 	hexToBinary,

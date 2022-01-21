@@ -1,7 +1,7 @@
-import { Avatar, Card, CardContent, Grid, Typography, Button,Box,TextField } from '@mui/material';
+import { Card, CardContent, Grid, Typography, Button,Box,TextField } from '@mui/material';
 import ConstructionOutlinedIcon from '@mui/icons-material/ConstructionOutlined';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export const TotalProfit = (props) =>{
   const [transaction,setTransaction] = useState('')

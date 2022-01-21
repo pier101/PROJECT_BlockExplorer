@@ -10,7 +10,7 @@ const cors = require('cors')
 
 const BC = require('./blockchain')
 const p2pserver = require('./network')
-const {initWallet,getPublicKeyFromWallet,inputPrivateKey} = require('./wallet');
+const {initWallet,getPublicKeyFromWallet,inputPassword,getPasswordFromWallet} = require('./wallet');
 const {importBlockDB} = require('./util')
 const BlockDB = require('../models/blocks')
 const bs58 = require('bs58')
@@ -105,16 +105,31 @@ function initHttpServer(httpport){
 
     // 지갑 생성확인
     app.post('/wallet',(req,res)=>{
-        console.log(req.body.data)
-        const inputKey = inputPrivateKey(req.body.data);
-        const myPrivateKey = getPublicKeyFromWallet()
-        if(inputKey == myPrivateKey){
-            const bytes = Buffer.from(myPrivateKey, 'hex')
-            console.log("bs58",bytes)
-            const address = bs58.encode(bytes)
-            res.json({result : true ,addr:address})
+        console.log(req.body.pwd)
+        const inputKey = inputPassword(req.body.pwd);
+        const myPasswordKey = getPasswordFromWallet()
+        const myPublicKey = getPublicKeyFromWallet()
+        console.log("입력한 비번 변환한거 : ",inputKey)
+        if(inputKey == myPasswordKey){
+            // const bytes = Buffer.from(myPrivateKey, 'hex')
+            // const address = bs58.encode(bytes)
+            // console.log(address)
+            res.json({result : true ,addr:myPublicKey})
+        }else{
+            res.json({result:false, msg: "비밀번호가 일치하지 않습니다."})
         }
+    })
 
+    app.post('/createWallet',(req,res)=>{
+        console.log("여기여기")
+        console.log("req.body.pwd",req.body.pwd)
+        const pwd = req.body.pwd
+        if (initWallet(pwd)=="기존에 지갑이 있습니다.") {
+            res.send("기존에 지갑이 있습니다.")
+        } else {
+            res.send("지갑을 생성하였습니다.")
+        }
+        initWallet(pwd);
     })
     
     // 작업 종료
@@ -135,18 +150,15 @@ function initHttpServer(httpport){
         }
     })
 
-    app.post('/createWallet',(req,res)=>{
-        /*
-            1. 공개키 있으면 이미 지갑있다고 처리
-            2. 없으면 initWallet 해서 public,address user db에 추가
-        */
-        User.findone()
-        if (condition) {
-            
-        }
-        initWallet
+    // app.post('/createWallet',(req,res)=>{
+    //     /*
+    //         1. 공개키 있으면 이미 지갑있다고 처리
+    //         2. 없으면 initWallet 해서 public,address user db에 추가
+    //     */
+      
+    //     initWallet()
 
-    })
+    // })
 
     app.listen(httpport,()=>{
         console.log("Listenign Http Port : " + httpport)
@@ -155,7 +167,7 @@ function initHttpServer(httpport){
 
 }
 
-initWallet();
+// initWallet();
 importBlockDB()
 
 // p2pserver.connectToPeers(["ws://localhost:6002","ws://localhost:6001"]);
@@ -169,6 +181,9 @@ p2pserver.initP2PServer(p2p_port)
     curl -X POST http://localhost:3001/stop
     curl -X POST http://localhost:3001/blocksReset
     curl -X GET http://localhost:3001/blocks | python3 -m json.tool
+
+    curl -H "Content-type:application/json" --data "{\"pwd\" : \"ehddnr\"}" http://localhost:3001/createWallet
+
     curl -H "Content-type:application/json" --data "{\"data\" : \"Anything1\"}" http://localhost:3001/mineBlock
     curl -H "Content-type:application/json" --data "{\"data\" : [\"ws://localhost:6001\"]}" http://localhost:3001/addPeers
     curl -X GET http://localhost:3001/sockets | python3 -m json.tool | grep socket._url
