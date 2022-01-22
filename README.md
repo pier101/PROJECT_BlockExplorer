@@ -1,1 +1,1 @@
-# PROJECT_block_explorer
+# 블록체인 시각화 프로젝트
