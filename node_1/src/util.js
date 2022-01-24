@@ -51,10 +51,10 @@ function setTime (){
 }
 
 function importBlockDB() {
+	console.log('저장된 db 불러오기');
 	const {Block,BlockHeader,Blocks} =require('./blockchain')
 	BlockDB.findAll({where:{}})
 	.then(res=>{
-		console.log('저장된 db 불러오기');
 		res.map(blocks=>{
 			if (blocks.dataValues.index === 0) {
 				return true

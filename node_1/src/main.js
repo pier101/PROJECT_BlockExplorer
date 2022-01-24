@@ -14,6 +14,12 @@ const {initWallet,getPublicKeyFromWallet,inputPassword,getPasswordFromWallet} = 
 const {importBlockDB} = require('./util')
 const BlockDB = require('../models/blocks')
 const bs58 = require('bs58')
+const {
+    TxIn,
+    TxOut,
+    Transaction,
+    UnspentTxOut,
+    getTransactionId} = require('./transaction'); 
 require("dotenv").config({ path: "../.env" });
 
 //env 설정하기 : export HTTP_PORT=3001
@@ -70,6 +76,33 @@ function initHttpServer(httpport){
         BC.getBlocks()=[BC.createGenesisBlock()]
     })
     
+    // 트랜젝션 생성
+    app.post("/sendToAddress",(req,res)=>{
+        console.log('보내기 요청옴')
+        const {addr, amount} = req.body
+        console.log(addr)
+        console.log(amount)
+        if (addr === undefined || amount === undefined){
+            throw Error("주소 or 금액값이 올바르지 않습니다.")
+        }
+        // const txIn = new TxIn("txout의 id",1,'')
+        // const txOut = new TxOut(address,amount)
+        // const trans = new Transaction(0,[txIn],[txOut]);
+        // const transId = getTransactionId(trans)
+        // trans.id = transId
+        // cd ~/project/PROJECT_BlockExplorer/node_1/src
+        const resp = BC.sendTransaction(addr,Number(amount))
+        console.log(resp)
+        res.send(resp)
+    })
+
+    //
+    app.post('/mineTransaction',(req,res)=>{
+        const {addr, amount} = req.body
+        const resp = BC.generatenextBlockWithTransaction(addr, Number(amount))
+        console.log(resp)
+        res.json(resp)
+    })
     // block 채굴(생성)
     app.post('/mineBlock',(req,res)=>{
 
@@ -77,10 +110,9 @@ function initHttpServer(httpport){
         const timeInterver = process.env.BLOCK_GENERATION_INTERVAL
         const blockInterver = process.env.DIFFICULTY_ADJUSTMENT_INTERVAL
 
-
         const data = [req.body.data] || []
         console.log(data)
-        const block = BC.nextBlock(data)
+        const block = BC.generateNextBlock(data)
         BC.addBlock(block)
         const miningResult = BC.addBlock(block)
         console.log(miningResult)
@@ -168,7 +200,7 @@ function initHttpServer(httpport){
 }
 
 // initWallet();
-importBlockDB()
+// importBlockDB()
 
 // p2pserver.connectToPeers(["ws://localhost:6002","ws://localhost:6001"]);
 initHttpServer(http_port)
@@ -194,3 +226,4 @@ p2pserver.initP2PServer(p2p_port)
     sequelize db:migrate
     sequelize db:migrate:undo
 */
+//채굴 > coinbaseTx 생성 후 배운거

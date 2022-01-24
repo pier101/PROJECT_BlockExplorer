@@ -9,6 +9,7 @@ export const TasksProgress = (props) => {
   const [inputWallet, setinputWallet] = useState('')
   const [inputPwd, setinputPwd] = useState('')
   const [switchInput,setSwitchInput] = useState(false)
+  const [balance,setBalance] = useState(100)
 
 const WalletCheck = async(e)=>{
   e.preventDefault();
@@ -70,6 +71,7 @@ const handlePassword = (e)=>{
               <Box sx={{color:"#fff",fontWeight:300,fontSize:12 ,wordBreak:"break-all"}}>
               {address}
               </Box>
+              <Box> 보유 금액 : {balance}</Box>
             </Grid>
           </Grid> :
           <Grid
