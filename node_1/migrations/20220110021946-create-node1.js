@@ -36,8 +36,8 @@ module.exports = {
         allowNull : false,
       },
       body: {
-        type: Sequelize.STRING,
-        allowNull : false,
+        type: Sequelize.ARRAY(Sequelize.TEXT),
+        allowNull : true,
       },
       miner: {
         type: Sequelize.STRING(130),

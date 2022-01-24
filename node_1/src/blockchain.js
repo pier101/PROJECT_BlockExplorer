@@ -5,6 +5,18 @@ require("dotenv").config({ path: "../.env" });
 const cryptojs = require('crypto-js')
 const merkle = require('merkle')
 const random = require('random');
+const _ = require("lodash");
+const {
+	getTransactionPool,
+    addToTransactionPool,
+    updateTransactionPool,
+} = require('./transactionPool');
+const {
+	processTransactions,
+	getCoinbaseTransaction,
+	isValidAddress,
+	getTransactionId
+} = require('./transaction');
 const {
 	getCurrentVersion,
     getCurrentTimestamp,
@@ -14,7 +26,7 @@ const {
 	addGenesisDB,
 	setTime
 } = require("./util")
-const {getPublicKeyFromWallet} = require('./wallet')
+const {getPublicKeyFromWallet,getPrivateKeyFromWallet,createTransaction} = require('./wallet')
 const {
 	resultMsg,
 	miningSuccess,
@@ -60,7 +72,18 @@ class BlockHeader{
 		this.nonce = nonce
 	}
 }
-
+const genesisTransaction = {
+    'txIns': [{ 'signature': '', 'txOutId': '045b097c35d2b38c3b3bf038c19da260334a1c3303e97ad69a317a198947580485e4f626095b146781b8b9593fb4446f1e5e3b1bcce5a3076302ebe1bea00b85ee', 'txOutIndex': 0 }],
+    'txOuts': [{
+            'address': '045b097c35d2b38c3b3bf038c19da260334a1c3303e97ad69a317a198947580485e4f626095b146781b8b9593fb4446f1e5e3b1bcce5a3076302ebe1bea00b85ee',
+            'amount': 50
+        }],
+    'id': cryptojs.SHA256(( '045b097c35d2b38c3b3bf038c19da260334a1c3303e97ad69a317a198947580485e4f626095b146781b8b9593fb4446f1e5e3b1bcce5a3076302ebe1bea00b85ee'
+							+ 0)
+							+( '045b097c35d2b38c3b3bf038c19da260334a1c3303e97ad69a317a198947580485e4f626095b146781b8b9593fb4446f1e5e3b1bcce5a3076302ebe1bea00b85ee' 
+							+ 50))
+							.toString()
+};
 
 // 블럭 생성 함수) 제네시스 블럭 생성
 function createGenesisBlock(){  //초기 블록 생성하는 함수
@@ -68,7 +91,7 @@ function createGenesisBlock(){  //초기 블록 생성하는 함수
 	const index = 0
 	const previousHash = '0'.repeat(64) // #최초블록은 이전 해쉬 없어서 0으로 64자리 채워넣음
 	const timestamp = 1641747654
-	const body = ['genesis_TX-0']
+	const body = [genesisTransaction]
 	const tree = merkle('sha256').sync(body)
 	const merkleRoot = tree.root() || '0'.repeat(64)
 	const difficulty = 0;
@@ -310,7 +333,45 @@ function isValidNewBlock(newBlock, previousBlock){
 			return prevAdjustmentBlock.header.difficulty;
 		}
 	}
+
+
+const generateNextBlock = () => {
+	const coinbaseTx = getCoinbaseTransaction(getPublicKeyFromWallet(), getLastBlock().index + 1);
+	console.log("coinbaseTx ======= \n",coinbaseTx)
+	const blockData = [coinbaseTx].concat(getTransactionPool());
+	console.log("blockData ======= \n",blockData)
+	return nextBlock(blockData);
+};
+
+let unspentTxOuts = processTransactions(Blocks[0].body, [], 0);
+const getUnspentTxOuts = () => _.cloneDeep(unspentTxOuts);
+
+	//===================================
+	const sendTransaction = (address, amount) => {
+		const tx = createTransaction(address, amount, getPrivateKeyFromWallet(), getUnspentTxOuts(), getTransactionPool());
+		console.log("getUnspentTxOuts \n",getUnspentTxOuts());
+		addToTransactionPool(tx, getUnspentTxOuts());
+		// p2p_1.broadCastTransactionPool();
+		return tx;
+	};
+
 	
+	const generatenextBlockWithTransaction = (receiverAddress, amount) => {
+		console.log("어마운트",typeof amount)
+		if (!isValidAddress(receiverAddress)) {
+			throw Error('invalid address');
+		}
+		if (typeof amount !== 'number') {
+			throw Error('invalid amount');
+		}
+		// coinbase transaction 생성 (퍼블릭키, 마지막블록의 index + 1)
+		const coinbaseTx = getCoinbaseTransaction(getPublicKeyFromWallet(), getLastBlock().index + 1); 
+		const tx = createTransaction(receiverAddress, amount, getPrivateKeyFromWallet(), getUnspentTxOuts(), getTransactionPool());
+		const blockData = [coinbaseTx, tx];
+		return nextBlock(blockData);
+	};
+
+	//===================================
 	
 	module.exports ={
 		getBlocks,
@@ -326,4 +387,7 @@ function isValidNewBlock(newBlock, previousBlock){
 		Block,
 		BlockHeader,
 		Blocks,
+		sendTransaction,
+		generateNextBlock,
+		generatenextBlockWithTransaction
 	}
