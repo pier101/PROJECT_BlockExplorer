@@ -14,7 +14,7 @@
  - unspent transaction output 의 역할을 이해하고 트랜잭션 흐름 파악.
 
 ## 3. 개발 환경
-  #### 3-1. Front-end / `React`, `Javascript`
+  #### 3-1. Front-end / `React`, `NextJS`, `Javascript`
   #### 3-2. Back-end / `NodeJS`, `Express`, `MySQL`, `MariaDB`
   #### 3-3. For Development / `Ubuntu`, `VScode`
 
