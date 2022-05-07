@@ -29,4 +29,4 @@
 | **블록넘버 & node 연결** | ![블록넘버,접속노드](https://user-images.githubusercontent.com/85658044/167235936-7233a774-e4e3-4b89-9533-d54bbcfbfec1.png) | 현재 node의 블록 길이 <br/> & 연결된 node |
 | **블록 채굴 현황** |![실시간 블록현황](https://user-images.githubusercontent.com/85658044/167235944-0a92a0ff-e525-4498-b97e-9b1711fa7e7c.png) |실시간 블록 채굴 현황
 | **채굴 보상 전송** | ![채굴보상 전송](https://user-images.githubusercontent.com/85658044/167236175-810f9c8e-5c5f-43f2-8945-cb324d6fb11c.png) | 채굴 보상 특정 지갑에 전송 |
-| **트랜잭션풀** | ![트랜잭션 풀](https://user-images.githubusercontent.com/85658044/167235959-4aaa369d-daa1-48fb-9096-362916b90af9.png) | 채굴 되지 않은 트랜잭션 풀에 저장 |
+| **트랜잭션풀** | ![트랜잭션 풀](https://user-images.githubusercontent.com/85658044/167235959-4aaa369d-daa1-48fb-9096-362916b90af9.png) | 채굴 되지 않은 트랜잭션은 풀에 저장 |
