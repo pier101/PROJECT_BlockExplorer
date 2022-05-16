@@ -20,7 +20,7 @@
 
 
 ## 4. 주요기능
-# 3. 페이지 구성
+#### 페이지 구성
 | 페이지 | 화면 | 설명 |
 | --- | --- | --- |
 | **전체페이지** | ![ProjectMain2](https://user-images.githubusercontent.com/85658044/167235863-14d5a000-e8ad-4271-b38a-b03eda416bc7.png) | 전체 페이지 |
